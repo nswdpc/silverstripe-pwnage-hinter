@@ -1,0 +1,13 @@
+---
+Name: nswdpc_silverstripe_pwnage_hinter_extensions
+---
+SilverStripe\Security\Member:
+  extensions:
+    - NSWDPC\Pwnage\MemberExtension
+SilverStripe\Admin\SecurityAdmin:
+  extensions:
+    - NSWDPC\Pwnage\SecurityAdminExtension
+SilverStripe\Security\PasswordValidator:
+  # add the pwnage validator
+  extensions:
+    - NSWDPC\Pwnage\PwnageValidator

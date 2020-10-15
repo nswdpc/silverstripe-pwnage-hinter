@@ -1,0 +1,30 @@
+---
+Name: nswdpc_silverstripe_pwnage_hinter
+---
+NSWDPC\Pwnage\Pwnage:
+  # whether to check for pwned passwords
+  check_pwned_passwords: true
+  # whether to allow accounts with pwned passwords
+  allow_pwned_passwords: false
+  # if an account email has appeared in a breach, lock the account
+  # (not yet implemented)
+  lock_account_on_breach: false
+  # notify on breach detection
+  notify_member_on_breach_detection: false
+  # notify breached account info via a digest to configured permission code
+  notify_breach_account_digest: true
+  # digest goes to group(s) with this permission code
+  digest_permission_code: 'ADMIN'
+  # notify pwned password info via a digest to configured permission code
+  notify_pwned_password_digest: true
+  # pwned password options
+  hibp_include_padding: true
+  # truncates response (when false returns the entire hibp breach model)
+  hibp_truncate_response: true
+  # add a domain to filter on that domain only
+  # changing this will cause notifications to be sent
+  # as the breached sites hash will change
+  hibp_domain_filter: null
+  # include unverified breaches in response
+  # if you want to include unverified breaches, set to true
+  hibp_include_unverified: false

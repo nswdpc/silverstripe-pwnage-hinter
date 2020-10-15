@@ -1,0 +1,5 @@
+en:
+  NSWDPC\Pwnage\Pwnage:
+    ATTRIBUTION: "We use the 'Have I Been Pwned' service (HIBP) to check whether your password or account has appeared in a data breach. The service is used under the terms of the Creative Commons Attribution 4.0 International License."
+    PASSWORD_ALERT: "The password you have selected has appeared in at least one data breach. Please use a different password."
+    BREACH_ALERT: "The email address you are using has appeared in at least one data breach."

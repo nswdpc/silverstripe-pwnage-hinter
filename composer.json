@@ -1,0 +1,29 @@
+{
+    "name": "nswdpc/silverstripe-pwnage-hinter",
+    "description": "Check if members have appeared in data breaches and/or whether they are using passwords that have appeared in a data breach",
+    "type": "silverstripe-vendormodule",
+    "license": "BSD-3-Clause",
+    "keywords": [
+        "silverstripe",
+        "pwnage",
+        "pwnedpasswords",
+        "password",
+        "haveibeenpwned",
+        "hibp",
+        "breach",
+        "security"
+    ],
+    "require": {
+        "mflor/pwned" : "^2",
+        "symbiote/silverstripe-queuedjobs" : "^4",
+        "symbiote/silverstripe-multivaluefield" : "^5"
+    },
+    "authors": [
+        {
+            "name": "James Ellis",
+            "homepage": "https://dpc.nsw.gov.au",
+            "role": "Developer"
+        }
+    ]
+
+}
