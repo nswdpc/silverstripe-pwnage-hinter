@@ -1,6 +1,5 @@
 # Notifications
 
-
 ## Configuration
 
 ### font_family
@@ -25,11 +24,11 @@ Default: noreply@localhost
 Change value to be the name emails will come from
 e.g "My Company Security Division"
 
-Default: Account notifier
+Default: 'Account notifier'
 
 ## Templates
 
-Email templates can be overridden in your them, just place templates in the same location in your theme/<theme_name>/templates directory:
+Email templates can be overridden in your theme, just place the following includes and templates in the same location in your theme/<theme_name>/templates directory and edit as required. The templates shipped with this module are provided as a guide.
 
 ```
 Includes
