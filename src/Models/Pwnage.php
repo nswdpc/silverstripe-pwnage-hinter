@@ -30,6 +30,12 @@ final class Pwnage
     private static $check_breached_accounts = false;
 
     /**
+     * By default, check against configured pwned password corpus
+     * @var boolean
+     */
+    private static $check_pwned_passwords = true;
+
+    /**
      * Whether to allow pwned passwords
      * If false this adds a validation warning and records the fact against the member
      * @var boolean
