@@ -119,38 +119,6 @@ class MemberExtension extends DataExtension
 
     }
 
-    public function onBeforeWrite()
-    {
-        parent::onBeforeWrite();
-        if ($this->owner->isChanged('Email')) {
-            // when the email address changes, reset the breach values
-            $this->owner->BreachCount = 0;
-            $this->owner->BreachNotify = 0;
-            $this->owner->BreachedSiteHash = '';
-
-            // check for a breached account
-            if (Pwnage::config()->get('check_breached_accounts')) {
-                try {
-                    $pwnage = Injector::inst()->create(Pwnage::class);
-                    $count = $pwnage->getBreachedAccountCount($this->owner->Email);
-                    $this->owner->BreachCount = $count;
-                    if ($count > 0) {
-                        /**
-                         * the member has changed their email and is in at least one known breach
-                         * ...flag for future notification
-                         * when requiresBreachedAccountNotification is called
-                         * the member will be flagged as requiring a notification
-                         * assuming that method return true
-                         */
-                        $this->owner->BreachNotify = 1;
-                    }
-                } catch (\Exception $e) {
-                    // some badness in the API call
-                }
-            }
-        }
-    }
-
     /**
      * Test to see whether the member requires a notification
      * @return boolean
