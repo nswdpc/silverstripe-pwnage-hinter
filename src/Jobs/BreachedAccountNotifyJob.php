@@ -13,6 +13,7 @@ use SilverStripe\ORM\FieldType\DBDatetime;
 /**
  * Notify accounts that have the breached flag
  * Requires notify_member_on_breach_detection to be true
+ * @deprecated this job will be removed in an upcoming release
  */
 class BreachedAccountNotifyJob extends AbstractQueuedJob
 {
