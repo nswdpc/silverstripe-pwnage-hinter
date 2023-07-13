@@ -97,6 +97,7 @@ class PwnedPasswordDigestJob extends AbstractQueuedJob
         ];
 
         foreach($groups as $group) {
+            $this->currentStep += 1;
             $this->addMessage("Sending digest to group {$group->Title}");
             $notifier->sendNotification(
                 $subject,

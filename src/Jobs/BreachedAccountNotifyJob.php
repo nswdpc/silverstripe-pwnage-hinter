@@ -47,6 +47,7 @@ class BreachedAccountNotifyJob extends AbstractQueuedJob
         $notifier = new PwnageNotifier();
 
         foreach ($members as $member) {
+            $this->currentStep += 1;
 
             $subject = _t(
                 Pwnage::class . ".YOUR_ACCOUNT_WAS_IN_A_BREACH",
@@ -83,6 +84,8 @@ class BreachedAccountNotifyJob extends AbstractQueuedJob
             $member->write();
 
         }
+
+        $this->isComplete = true;
     }
 
     public function afterComplete()

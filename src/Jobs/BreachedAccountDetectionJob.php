@@ -62,6 +62,7 @@ class BreachedAccountDetectionJob extends AbstractQueuedJob
         }
 
         foreach ($members as $member) {
+            $this->currentStep += 1;
             try {
                 $member->BreachNotify = 0;//reset
                 // check for a change.. this calls the API
@@ -81,6 +82,8 @@ class BreachedAccountDetectionJob extends AbstractQueuedJob
             // sleep to keep below rate limiting
             sleep($sleep_time);
         }
+
+        $this->isComplete = true;
     }
 
     public function afterComplete()
