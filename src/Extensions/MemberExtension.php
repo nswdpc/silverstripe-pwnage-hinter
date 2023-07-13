@@ -4,6 +4,7 @@ namespace NSWDPC\Pwnage;
 
 use Silverstripe\ORM\DataExtension;
 use SilverStripe\Core\Config\Config;
+use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\ReadonlyField;
 use SilverStripe\Forms\FormField;
@@ -11,7 +12,6 @@ use SilverStripe\Security\PasswordValidator;
 
 /**
  * Decorates SilverStripe\Security\Member with fields related to compromised passwords and breaches
- * @author James <james@dpc>
  */
 class MemberExtension extends DataExtension
 {
@@ -129,9 +129,9 @@ class MemberExtension extends DataExtension
             $this->owner->BreachedSiteHash = '';
 
             // check for a breached account
-            $pwnage = new Pwnage();
-            if ($pwnage->config()->get('check_breached_accounts')) {
+            if (Pwnage::config()->get('check_breached_accounts')) {
                 try {
+                    $pwnage = Injector::inst()->create(Pwnage::class);
                     $count = $pwnage->getBreachedAccountCount($this->owner->Email);
                     $this->owner->BreachCount = $count;
                     if ($count > 0) {

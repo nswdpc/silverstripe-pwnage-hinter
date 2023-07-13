@@ -6,11 +6,11 @@ use Symbiote\QueuedJobs\Services\QueuedJobService;
 use Symbiote\QueuedJobs\Services\AbstractQueuedJob;
 use SilverStripe\Security\Member;
 use SilverStripe\Core\Config\Configurable;
+use SilverStripe\Core\Injector\Injector;
 
 /**
  * Check for breached accounts using Member.Email field
  * Set their BreachNotify flag to 1, which is picked up by notification jobs
- * @author James <james@dpc>
  */
 class BreachedAccountDetectionJob extends AbstractQueuedJob
 {
@@ -30,9 +30,9 @@ class BreachedAccountDetectionJob extends AbstractQueuedJob
 
     public function process(): void
     {
-        $pwnage = new Pwnage();
+        $pwnage = Injector::inst()->create(Pwnage::class);
 
-        if (!$pwnage->config()->get('check_breached_accounts')) {
+        if (!Pwnage::config()->get('check_breached_accounts')) {
             throw new \Exception(
                 _t(
                     Pwnage::class . ".BREACHED_ACCT_CHECK_NOT_ENABLED",
@@ -41,7 +41,7 @@ class BreachedAccountDetectionJob extends AbstractQueuedJob
             );
         }
 
-        if (! ($key =$pwnage->config()->get('hibp_api_key'))) {
+        if (! ($key = Pwnage::config()->get('hibp_api_key'))) {
             throw new \Exception(
                 _t(
                     Pwnage::class . ".NO_HIBP_KEY",
@@ -55,7 +55,7 @@ class BreachedAccountDetectionJob extends AbstractQueuedJob
         $columns = [ "ID", "Email" ];
         $members->setQueriedColumns($columns);
 
-        $sleep_time = $this->config()->get('sleep_time');
+        $sleep_time = self::config()->get('sleep_time');
         if ($sleep_time < self::MIN_SLEEP) {
             // reset to min sleep value
             $sleep_time = MIN_SLEEP;

@@ -8,7 +8,6 @@ use SilverStripe\Core\Config\Config;
 
 /**
  * Adds HIBP attribution information to the Security admin section
- * @author James <james@dpc>
  */
 class SecurityAdminExtension extends Extension
 {

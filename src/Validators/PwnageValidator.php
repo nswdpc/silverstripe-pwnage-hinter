@@ -11,7 +11,6 @@ use SilverStripe\Core\Extension;
 
 /**
  * Extends {@link SilverStripe\Security\PasswordValidator} to provide pwnage smarts
- * @author James <james@dpc>
  */
 class PwnageValidator extends Extension
 {
@@ -31,12 +30,12 @@ class PwnageValidator extends Extension
             // no need to continue with validation here as the password is already invalid for some reason
             return;
         }
-        if (Config::inst()->get(Pwnage::class, 'check_pwned_passwords')) {
+        if (Pwnage::config()->get('check_pwned_passwords')) {
             try {
-                $pwnage = new Pwnage();
+                $pwnage = Injector::inst()->create(Pwnage::class);
                 $occurences = $pwnage->checkPassword($password);
                 if ($occurences > 0) {
-                    if (!$pwnage->config()->get('allow_pwned_passwords')) {
+                    if (!Pwnage::config()->get('allow_pwned_passwords')) {
                         // password will not be changed
                         $member->IsPwnedPassword = 0;
                         $member->PwnedPasswordNotify = 0;

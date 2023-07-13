@@ -6,13 +6,13 @@ use Symbiote\QueuedJobs\Services\QueuedJobService;
 use Symbiote\QueuedJobs\Services\AbstractQueuedJob;
 use SilverStripe\Security\Member;
 use SilverStripe\Core\Config\Configurable;
+use SilverStripe\Core\Injector\Injector;
 use SilverStripe\ORM\FieldType\DBField;
 use SilverStripe\ORM\FieldType\DBDatetime;
 use SilverStripe\View\ArrayData;
 
 /**
  * Notify group(s) with pwned password count, not specific information
- * @author James <james@dpc>
  */
 class PwnedPasswordDigestJob extends AbstractQueuedJob
 {
@@ -31,9 +31,9 @@ class PwnedPasswordDigestJob extends AbstractQueuedJob
     public function process(): void
     {
 
-        $pwnage = new Pwnage();
+        $pwnage = Injector::inst()->create(Pwnage::class);
 
-        if(!$pwnage->config()->get('notify_pwned_password_digest')) {
+        if(!Pwnage::config()->get('notify_pwned_password_digest')) {
             // turned off
             $this->addMessage("Not sending, notify_pwned_password_digest is off");
             $this->isComplete = true;
@@ -113,7 +113,7 @@ class PwnedPasswordDigestJob extends AbstractQueuedJob
 
     public function afterComplete()
     {
-        $requeue_in = $this->config()->get('requeue_in');
+        $requeue_in = self::config()->get('requeue_in');
         if(!$requeue_in || $requeue_in <= 0) {
             return null;
         }

@@ -4,18 +4,19 @@ namespace NSWDPC\Pwnage;
 
 use MFlor\Pwned\Pwned;
 use SilverStripe\Core\Config\Configurable;
+use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\Control\Email\Email;
 use SilverStripe\ORM\ValidationException;
 use SilverStripe\Security\Permission;
 
 /**
  * Model for checking passwords and breaches and the like
- * @author James <james.ellis@dpc.nsw.gov.au>
  */
-final class Pwnage
+class Pwnage
 {
 
     use Configurable;
+    use Injectable;
 
     /**
      * Your HIBP API key
@@ -100,12 +101,18 @@ final class Pwnage
      */
     private static $notify_pwned_password_digest = true;
 
+    /**
+     * Return the Pwned API client
+     */
+    protected function getClient($api_key = null) : Pwned {
+        return new Pwned($api_key);
+    }
 
     /**
      * Get groups that can be notified of pwned passwords
      */
     public function getDigestNotificationGroups() {
-        $code = $this->config()->get('digest_permission_code');
+        $code = self::config()->get('digest_permission_code');
         if(!$code) {
             return false;
         }
@@ -122,11 +129,11 @@ final class Pwnage
     {
         try {
             $error = "";
-            $pwned = new Pwned();
+            $pwned = $this->getClient();
             // note: {@link MFlor\Pwned\Repositories\PasswordRepository} hashes the password as required
             $occurences = $pwned->passwords()->occurrences(
                             $password_plaintext,
-                            $this->config()->get('hibp_include_padding')
+                            self::config()->get('hibp_include_padding')
             );
             return $occurences;
         } catch (\Exception $e) {
@@ -153,7 +160,7 @@ final class Pwnage
                 );
             }
 
-            $key = $this->config()->get('hibp_api_key');
+            $key = self::config()->get('hibp_api_key');
             if (!$key) {
                 throw new ApiException(
                     _t(
@@ -165,11 +172,11 @@ final class Pwnage
 
             $error = "";
             $options = [
-                'truncateResponse' => $this->config()->get('hibp_truncate_response'),
-                'domain' => $this->config()->get('hibp_domain_filter'),
-                'includeUnverified' => $this->config()->get('hibp_include_unverified')
+                'truncateResponse' => self::config()->get('hibp_truncate_response'),
+                'domain' => self::config()->get('hibp_domain_filter'),
+                'includeUnverified' => self::config()->get('hibp_include_unverified')
             ];
-            $pwned = new Pwned($key);
+            $pwned = $this->getClient($key);
             $breaches = $pwned->breaches()->byAccount($email_address, $options);
             return $breaches;
         } catch (\Exception $e) {

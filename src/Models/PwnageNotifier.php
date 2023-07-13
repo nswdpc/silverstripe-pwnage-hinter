@@ -10,7 +10,6 @@ use SilverStripe\Security\Member;
 
 /**
  * Model for checking passwords and breaches and the like
- * @author James <james.ellis@dpc.nsw.gov.au>
  */
 class PwnageNotifier
 {
@@ -44,7 +43,7 @@ class PwnageNotifier
 
         $email->setHTMLTemplate($template);
 
-        $data['FontFamily'] = $this->config()->get('font_family');
+        $data['FontFamily'] = self::config()->get('font_family');
         if(!$data['FontFamily']) {
             $data['FontFamily'] = 'sans-serif';
         }
@@ -54,7 +53,7 @@ class PwnageNotifier
         $email->setSubject($subject);
 
         $email->setFrom([
-            $this->config()->get('email_from') => $this->config()->get('email_from_name')
+            self::config()->get('email_from') => self::config()->get('email_from_name')
         ]);
 
         $this->extend('updateNotificationEmail', $email);
