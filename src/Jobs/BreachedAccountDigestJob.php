@@ -13,11 +13,16 @@ use SilverStripe\View\ArrayData;
 
 /**
  * Notify group(s) of breached account count
+ * @deprecated this job will be removed in an upcoming release
  */
 class BreachedAccountDigestJob extends AbstractQueuedJob
 {
     use Configurable;
 
+    /**
+     * @var int
+     * Requeue job in (seconds)
+     */
     private static $requeue_in = 86400;
 
     /**
@@ -57,22 +62,23 @@ class BreachedAccountDigestJob extends AbstractQueuedJob
 
         $member_count = $members->count();
 
-        $subject = sprintf(
-            _t(
-                Pwnage::class . ".BREACHED_ACCOUNT_DIGEST_SUBJECT",
-                "Breached account digest: there are %d accounts flagged"
-            ), $member_count
+        if($member_count == 0) {
+            $this->isComplete = true;
+            return;
+        }
+
+        $subject = _t(
+            Pwnage::class . ".BREACHED_ACCOUNT_DIGEST_SUBJECT",
+            "Breached account digest"
         );
 
-        $warning = "";
-        if($member_count > 0) {
-            $warning = sprintf(
-                _t(
-                    Pwnage::class . ".NON_ZERO_BREACHED_ACCOUNTS",
-                    "There are %d accounts flagged as appearing in known data breaches"
-                ), $member_count
-            );
-        }
+        $warning = _t(
+            Pwnage::class . ".NON_ZERO_BREACHED_ACCOUNTS",
+            "There are {member_count} accounts flagged as appearing in known data breaches",
+            [
+                'member_count' => $member_count
+            ]
+        );
 
         $content_data = ArrayData::create();
 

@@ -19,6 +19,9 @@ class BreachedAccountNotifyJob extends AbstractQueuedJob
 {
     use Configurable;
 
+    /**
+     * Requeue job in (seconds)
+     */
     private static $requeue_in = 86400;
 
     /**
@@ -43,7 +46,16 @@ class BreachedAccountNotifyJob extends AbstractQueuedJob
         $members = Member::get()
                     ->exclude('BreachCount', 0)
                     // and are flagged for notification
-                    ->filter('BreachNotify', 1);
+                    ->filter([
+                        'BreachNotify' => 1,
+                        'BreachNotifyLast' => null
+                    ]);
+
+        if($members->count() == 0) {
+            $this->isComplete = true;
+            $this->addMessage('No-one to notify');
+            return;
+        }
 
         $notifier = new PwnageNotifier();
 
@@ -81,7 +93,7 @@ class BreachedAccountNotifyJob extends AbstractQueuedJob
             );
 
             $member->BreachNotify = 0;
-            $member->BreachNotifyLast = DBDatetime::now();
+            $member->BreachNotifyLast = DBDatetime::now()->format(DBDatetime::ISO_DATETIME);
             $member->write();
 
         }

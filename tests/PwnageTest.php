@@ -73,6 +73,7 @@ class PwnageTest extends SapphireTest {
     public function testBreachedAccountApiNoKey() {
 
         try {
+            Config::modify()->set(Pwnage::class, 'hibp_api_key', '');
             $pwnage = $this->getPwnageInstance();
             $errors = [];
             // this email address has appeared in a breach
@@ -102,6 +103,27 @@ class PwnageTest extends SapphireTest {
 
         $this->assertEmpty($errors, "API exceptions found: " . implode(",", $errors));
 
+    }
+
+    public function testBreachCountReset() {
+        $record = [
+            'Email' => 'test@example.com',
+            'FirstName' => 'Test',
+            'Surname' => 'Tester',
+            'BreachCount' => 12,
+            'BreachNotify' => 0,
+            'BreachNotifyLast' => '2022-01-01 10:00:00',
+            'BreachedSiteHash' => 'test-123'
+        ];
+        $member = Member::create($record);
+        $member->write();
+        $this->assertEquals(12, $member->BreachCount);
+        $member->Email = 'test.changed@example.net';
+        $member->write();
+        $this->assertEquals(0, $member->BreachCount);
+        $this->assertEquals(0, $member->BreachNotify);
+        $this->assertNull($member->BreachNotifyLast);
+        $this->assertEmpty($member->BreachedSiteHash);
     }
 
     /**

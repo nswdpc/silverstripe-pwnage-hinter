@@ -15,8 +15,8 @@ class SecurityAdminExtension extends Extension
     {
         $fields = $form->Fields();
         if ($fields) {
-            $fields->addFieldToTab(
-                'Root.Users',
+            $fields->insertAfter(
+                'users',
                 LiteralField::create(
                     'PwnedPasswordAttribution',
                     '<div class="alert alert-info">'

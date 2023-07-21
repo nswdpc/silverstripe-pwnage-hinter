@@ -18,6 +18,9 @@ class PwnedPasswordDigestJob extends AbstractQueuedJob
 {
     use Configurable;
 
+    /**
+     * Requeue job in (seconds)
+     */
     private static $requeue_in = 86400;
 
     /**
@@ -57,20 +60,19 @@ class PwnedPasswordDigestJob extends AbstractQueuedJob
 
         $member_count = $members->count();
 
-        $subject = sprintf(
-            _t(
-                Pwnage::class . ".PWNAGE_DIGEST_SUBJECT",
-                "Pwned password digest: there are %d accounts flagged"
-            ), $member_count
+        $subject = _t(
+            Pwnage::class . ".PWNAGE_DIGEST_SUBJECT",
+            "Pwned password digest"
         );
 
         $warning = "";
         if($member_count > 0) {
-            $warning = sprintf(
-                _t(
-                    Pwnage::class . ".NON_ZERO_PWNED_PASSWORDS",
-                    "There are %d accounts flagged as having a pwned password"
-                ), $member_count
+            $warning = _t(
+                Pwnage::class . ".NON_ZERO_PWNED_PASSWORDS",
+                "There are {member_count} accounts flagged as having a pwned password",
+                [
+                    'member_count' => $member_count
+                ]
             );
         }
 

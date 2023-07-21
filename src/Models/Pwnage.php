@@ -75,19 +75,19 @@ class Pwnage
      * HIBP breach option - when true, returns only the name of the breach.
      * @var boolean
      */
-    private static $truncate_response = true;
+    private static $hibp_truncate_response = true;
 
     /**
      * HIBP breach option - filter result set to just this domain
      * @var string
      */
-    private static $domain_filter = '';
+    private static $hibp_domain_filter = '';
 
     /**
      * HIBP breach option - include unverified breaches
      * @var boolean
      */
-    private static $include_unverified = false;
+    private static $hibp_include_unverified = false;
 
     /**
      * Permission code to use for digest notification
@@ -145,44 +145,39 @@ class Pwnage
 
     /**
      * Check plain password using {@link MFlor\Pwned\Pwned} service client
-     * @param string $password_plaintext
+     * @param string $email_address
      * @returns array
      */
-    public function checkBreachedAccount($email_address)
+    public function checkBreachedAccount(string $email_address) : array
     {
-        try {
-            if (!Email::is_valid_address($email_address)) {
-                throw new ValidationException(
-                    _t(
-                        Pwnage::class . ".EMAIL_NOT_VALID",
-                        "Email address provided is not valid"
-                    )
-                );
-            }
-
-            $key = self::config()->get('hibp_api_key');
-            if (!$key) {
-                throw new ApiException(
-                    _t(
-                        Pwnage::class . ".HIBP_KEY_REQUIRED_FOR_ACTION",
-                        "HIBP API key required to perform this action"
-                    )
-                );
-            }
-
-            $error = "";
-            $options = [
-                'truncateResponse' => self::config()->get('hibp_truncate_response'),
-                'domain' => self::config()->get('hibp_domain_filter'),
-                'includeUnverified' => self::config()->get('hibp_include_unverified')
-            ];
-            $pwned = $this->getClient($key);
-            $breaches = $pwned->breaches()->byAccount($email_address, $options);
-            return $breaches;
-        } catch (\Exception $e) {
-            $error = $e->getMessage() ?: "unknown";
+        if (!Email::is_valid_address($email_address)) {
+            throw new ValidationException(
+                _t(
+                    Pwnage::class . ".EMAIL_NOT_VALID",
+                    "Email address provided is not valid"
+                )
+            );
         }
-        throw new ApiException($error);
+
+        $key = self::config()->get('hibp_api_key');
+        if (!$key) {
+            throw new ApiException(
+                _t(
+                    Pwnage::class . ".HIBP_KEY_REQUIRED_FOR_ACTION",
+                    "HIBP API key required to perform this action"
+                )
+            );
+        }
+
+        $options = [
+            'truncateResponse' => self::config()->get('hibp_truncate_response'),
+            'domain' => self::config()->get('hibp_domain_filter'),
+            'includeUnverified' => self::config()->get('hibp_include_unverified')
+        ];
+
+        $pwned = $this->getClient($key);
+        $breaches = $pwned->breaches()->byAccount($email_address, $options);
+        return $breaches ?? [];
     }
 
     /**
