@@ -89,7 +89,7 @@ class MemberExtension extends DataExtension
     public function updateCMSFields(FieldList $fields)
     {
         $fields->removeByName([
-            'BreachNotify','PwnedPasswordNotify','BreachedSiteHash'
+            'BreachNotify','PwnedPasswordNotify','BreachedSiteHash','BreachCheckNext'
         ]);
 
         if ($confirmed_password_field = $fields->dataFieldByName('Password')) {
