@@ -6,18 +6,22 @@ use Symbiote\QueuedJobs\Services\QueuedJobService;
 use Symbiote\QueuedJobs\Services\AbstractQueuedJob;
 use SilverStripe\Security\Member;
 use SilverStripe\Core\Config\Configurable;
+use SilverStripe\Core\Injector\Injector;
 use SilverStripe\ORM\FieldType\DBField;
 use SilverStripe\ORM\FieldType\DBDatetime;
 
 /**
  * Notify accounts that have the breached flag
  * Requires notify_member_on_breach_detection to be true
- * @author James <james@dpc>
+ * @deprecated this job will be removed in an upcoming release
  */
 class BreachedAccountNotifyJob extends AbstractQueuedJob
 {
     use Configurable;
 
+    /**
+     * Requeue job in (seconds)
+     */
     private static $requeue_in = 86400;
 
     /**
@@ -30,9 +34,9 @@ class BreachedAccountNotifyJob extends AbstractQueuedJob
 
     public function process(): void
     {
-        $pwnage = new Pwnage();
+        $pwnage = Injector::inst()->create(Pwnage::class);
 
-        if(!$pwnage->config()->get('notify_member_on_breach_detection')) {
+        if(!Pwnage::config()->get('notify_member_on_breach_detection')) {
             $this->addMessage('Member notification is turned off');
             $this->isComplete = true;
             return;
@@ -42,11 +46,21 @@ class BreachedAccountNotifyJob extends AbstractQueuedJob
         $members = Member::get()
                     ->exclude('BreachCount', 0)
                     // and are flagged for notification
-                    ->filter('BreachNotify', 1);
+                    ->filter([
+                        'BreachNotify' => 1,
+                        'BreachNotifyLast' => null
+                    ]);
+
+        if($members->count() == 0) {
+            $this->isComplete = true;
+            $this->addMessage('No-one to notify');
+            return;
+        }
 
         $notifier = new PwnageNotifier();
 
         foreach ($members as $member) {
+            $this->currentStep += 1;
 
             $subject = _t(
                 Pwnage::class . ".YOUR_ACCOUNT_WAS_IN_A_BREACH",
@@ -79,15 +93,17 @@ class BreachedAccountNotifyJob extends AbstractQueuedJob
             );
 
             $member->BreachNotify = 0;
-            $member->BreachNotifyLast = DBDatetime::now();
+            $member->BreachNotifyLast = DBDatetime::now()->format(DBDatetime::ISO_DATETIME);
             $member->write();
 
         }
+
+        $this->isComplete = true;
     }
 
     public function afterComplete()
     {
-        $requeue_in = $this->config()->get('requeue_in');
+        $requeue_in = self::config()->get('requeue_in');
         if(!$requeue_in || $requeue_in <= 0) {
             return null;
         }

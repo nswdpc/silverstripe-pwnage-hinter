@@ -12,8 +12,6 @@
             <td class="content-wrap" style="font-family: {$FontFamily.XML}; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 20px;" valign="top">
                 <table width="100%" cellpadding="0" cellspacing="0" style="font-family: {$FontFamily.XML}; box-sizing: border-box; font-size: 14px; margin: 0;">
 
-                    <% end_if %>
-
                     <tr style="font-family: {$FontFamily.XML}; box-sizing: border-box; font-size: 14px; margin: 0;">
                         <td class="content-block" style="font-family: {$FontFamily.XML}; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;" valign="top">
 

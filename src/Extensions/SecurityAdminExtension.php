@@ -8,7 +8,6 @@ use SilverStripe\Core\Config\Config;
 
 /**
  * Adds HIBP attribution information to the Security admin section
- * @author James <james@dpc>
  */
 class SecurityAdminExtension extends Extension
 {
@@ -16,8 +15,8 @@ class SecurityAdminExtension extends Extension
     {
         $fields = $form->Fields();
         if ($fields) {
-            $fields->addFieldToTab(
-                'Root.Users',
+            $fields->insertAfter(
+                'users',
                 LiteralField::create(
                     'PwnedPasswordAttribution',
                     '<div class="alert alert-info">'

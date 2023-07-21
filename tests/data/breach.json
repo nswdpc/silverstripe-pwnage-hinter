@@ -1,0 +1,36 @@
+[
+  {
+    "Name":"Example1",
+    "Title":"Example 1",
+    "Domain":"example.com",
+    "BreachDate":"2020-01-01",
+    "AddedDate":"2020-02-02T00:00Z",
+    "ModifiedDate":"2020-03-03T00:00Z",
+    "PwnCount":1000000,
+    "Description":"Example 1 Description",
+    "DataClasses":["Email addresses","Password hints","Passwords","Usernames"],
+    "IsVerified":true,
+    "IsFabricated":false,
+    "IsSensitive":false,
+    "IsRetired":false,
+    "IsSpamList":false,
+    "LogoPath":"https://example.com/Content/Images/PwnedLogos/Example1.png"
+  },
+  {
+    "Name":"Example2",
+    "Title":"Example 2",
+    "Domain":"example.net",
+    "BreachDate":"2021-06-01",
+    "AddedDate":"2021-06-30T20:00Z",
+    "ModifiedDate":"2021-07-20T08:00Z",
+    "PwnCount":1000,
+    "Description":"Example 2 Description",
+    "DataClasses":["Passwords","Usernames"],
+    "IsVerified":true,
+    "IsFabricated":false,
+    "IsSensitive":false,
+    "IsRetired":false,
+    "IsSpamList":false,
+    "LogoPath":"https://example.com/Content/Images/PwnedLogos/Example2.png"
+  }
+]

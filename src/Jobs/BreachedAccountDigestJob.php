@@ -6,18 +6,23 @@ use Symbiote\QueuedJobs\Services\QueuedJobService;
 use Symbiote\QueuedJobs\Services\AbstractQueuedJob;
 use SilverStripe\Security\Member;
 use SilverStripe\Core\Config\Configurable;
+use SilverStripe\Core\Injector\Injector;
 use SilverStripe\ORM\FieldType\DBField;
 use SilverStripe\ORM\FieldType\DBDatetime;
 use SilverStripe\View\ArrayData;
 
 /**
  * Notify group(s) of breached account count
- * @author James <james@dpc>
+ * @deprecated this job will be removed in an upcoming release
  */
 class BreachedAccountDigestJob extends AbstractQueuedJob
 {
     use Configurable;
 
+    /**
+     * @var int
+     * Requeue job in (seconds)
+     */
     private static $requeue_in = 86400;
 
     /**
@@ -31,9 +36,9 @@ class BreachedAccountDigestJob extends AbstractQueuedJob
     public function process(): void
     {
 
-        $pwnage = new Pwnage();
+        $pwnage = Injector::inst()->create(Pwnage::class);
 
-        if(!$pwnage->config()->get('notify_breach_account_digest')) {
+        if(!Pwnage::config()->get('notify_breach_account_digest')) {
             // turned off
             $this->addMessage("Not sending, notify_breach_account_digest is off");
             $this->isComplete = true;
@@ -57,22 +62,23 @@ class BreachedAccountDigestJob extends AbstractQueuedJob
 
         $member_count = $members->count();
 
-        $subject = sprintf(
-            _t(
-                Pwnage::class . ".BREACHED_ACCOUNT_DIGEST_SUBJECT",
-                "Breached account digest: there are %d accounts flagged"
-            ), $member_count
+        if($member_count == 0) {
+            $this->isComplete = true;
+            return;
+        }
+
+        $subject = _t(
+            Pwnage::class . ".BREACHED_ACCOUNT_DIGEST_SUBJECT",
+            "Breached account digest"
         );
 
-        $warning = "";
-        if($member_count > 0) {
-            $warning = sprintf(
-                _t(
-                    Pwnage::class . ".NON_ZERO_BREACHED_ACCOUNTS",
-                    "There are %d accounts flagged as appearing in known data breaches"
-                ), $member_count
-            );
-        }
+        $warning = _t(
+            Pwnage::class . ".NON_ZERO_BREACHED_ACCOUNTS",
+            "There are {member_count} accounts flagged as appearing in known data breaches",
+            [
+                'member_count' => $member_count
+            ]
+        );
 
         $content_data = ArrayData::create();
 
@@ -97,6 +103,7 @@ class BreachedAccountDigestJob extends AbstractQueuedJob
         ];
 
         foreach($groups as $group) {
+            $this->currentStep += 1;
             $this->addMessage("Sending digest to group {$group->Title}");
             $notifier->sendNotification(
                 $subject,
@@ -113,7 +120,7 @@ class BreachedAccountDigestJob extends AbstractQueuedJob
 
     public function afterComplete()
     {
-        $requeue_in = $this->config()->get('requeue_in');
+        $requeue_in = self::config()->get('requeue_in');
         if(!$requeue_in || $requeue_in <= 0) {
             return null;
         }
