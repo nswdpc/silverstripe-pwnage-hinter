@@ -144,7 +144,7 @@ class Pwnage
     }
 
     /**
-     * Check plain password using {@link MFlor\Pwned\Pwned} service client
+     * Check email address using {@link MFlor\Pwned\Pwned} service client
      * @param string $email_address
      * @returns array
      */
