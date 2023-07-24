@@ -6,9 +6,6 @@ use NSWDPC\Pwnage\Pwnage;
 use NSWDPC\Pwnage\ApiException;
 use NSWDPC\Pwnage\PwnedPasswordException;
 use NSWDPC\Pwnage\PwnedPasswordDigestJob;
-use NSWDPC\Pwnage\BreachedAccountDetectionJob;
-use NSWDPC\Pwnage\BreachedAccountDigestJob;
-use NSWDPC\Pwnage\BreachedAccountNotifyJob;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Injector\Injector;
@@ -93,100 +90,4 @@ class PwnageJobTest extends SapphireTest {
 
     }
 
-
-    public function testBreachedAccountDetectionJob() {
-
-        Config::modify()->set( Pwnage::class, 'check_breached_accounts', true );
-        Config::modify()->set( Pwnage::class, 'hibp_api_key', 'test-api-key' );
-        Config::modify()->set( BreachedAccountDetectionJob::class, 'check_in_days', 10 );
-
-        $nextBatchStartAfter = DBDatetime::now();
-        $nextBatchStartAfter->modify("+10 days");
-
-        $members = Member::get()->filter(['BreachCount' => 0]);
-        $limit = 5;
-        $batches = ceil($members->count() / $limit);
-
-        for($i=0;$i<$batches;$i++) {
-
-            if($i == 0) {
-                // kick off the initial job
-                $job = new BreachedAccountDetectionJob($limit);
-                $job->process();
-            }
-
-            $memberList = Member::get()->exclude(['BreachCount' => 0]);
-            foreach($memberList as $member) {
-                // from test data
-                $this->assertEquals(2, $member->BreachCount);
-                $this->assertNotNull($member->BreachCheckNext);
-                $this->assertEquals(1, $member->BreachNotify);
-            }
-
-            // check finished and run after complete
-            if($i == 0) {
-                // job finished, fire next job creation
-                $this->assertTrue($job->jobFinished());
-                $job->afterComplete();
-            }
-
-            // job descriptor
-            $nextJobDescriptor = QueuedJobDescriptor::get()->filter([
-                'Implementation' => BreachedAccountDetectionJob::class,
-                'JobStatus' => QueuedJob::STATUS_NEW
-            ])->first();
-
-            $this->assertInstanceOf(QueuedJobDescriptor::class, $nextJobDescriptor);
-
-            // execute the next job
-            $nextJobDescriptor->execute();
-
-        }
-
-        // Verify that batch completed (test expects all)
-        $this->assertEquals(0, Member::get()->filter(['BreachCount' => 0])->count());
-
-        $nextJobDescriptor = QueuedJobDescriptor::get()->filter([
-            'Implementation' => BreachedAccountDetectionJob::class,
-            'JobStatus' => QueuedJob::STATUS_NEW
-        ])->first();
-
-        $this->assertInstanceOf(QueuedJobDescriptor::class, $nextJobDescriptor);
-
-        $dt = DBField::create_field(DBDatetime::class, $nextJobDescriptor->StartAfter );
-        $this->assertEquals( $nextBatchStartAfter->format( DBDatetime::ISO_DATE ), $dt->format( DBDatetime::ISO_DATE ) );
-
-
-        // run the digest job
-        $job = new BreachedAccountDigestJob();
-        $job->process();
-
-        $to = '';
-        $from = null;
-        $subject = _t(
-            Pwnage::class . ".BREACHED_ACCOUNT_DIGEST_SUBJECT",
-            "Breached account digest"
-        );
-        $digestEmail = $this->findEmail($to, $from, $subject);
-
-        $this->assertNotNull( $digestEmail );
-
-        Config::modify()->set( Pwnage::class, 'notify_member_on_breach_detection', true );
-
-        // run the notification job
-        $job = new BreachedAccountNotifyJob();
-        $job->process();
-
-        $to = '';
-        $from = null;
-        $subject = _t(
-            Pwnage::class . ".YOUR_ACCOUNT_WAS_IN_A_BREACH",
-            "Your account was listed in a data breach"
-        );
-        $notifyEmail = $this->findEmail($to, $from, $subject);
-
-        $this->assertNotNull( $notifyEmail );
-
-
-    }
 }

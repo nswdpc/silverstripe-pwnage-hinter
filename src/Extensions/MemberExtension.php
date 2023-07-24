@@ -21,12 +21,7 @@ class MemberExtension extends DataExtension
      */
     private static $db = [
         'IsPwnedPassword' => 'Boolean',
-        'PwnedPasswordNotify' => 'Boolean',// optional flag to notify admin of pwned password
-        'BreachCount' => 'Int',
-        'BreachNotify' => 'Boolean',// optional flag to notfy admin/user of breached account
-        'BreachNotifyLast' => 'Datetime',
-        'BreachedSiteHash' => 'Varchar(255)',
-        'BreachCheckNext' => 'Datetime'
+        'PwnedPasswordNotify' => 'Boolean'// optional flag to notify admin of pwned password
     ];
 
     /**
@@ -34,11 +29,7 @@ class MemberExtension extends DataExtension
      */
     private static $defaults = [
         'IsPwnedPassword' => '0',
-        'PwnedPasswordNotify' => '0',
-        'BreachCount' => '0',
-        'BreachNotify' => '0',
-        'BreachNotifyLast' => null,
-        'BreachCheckNext' => null
+        'PwnedPasswordNotify' => '0'
     ];
 
     /**
@@ -46,10 +37,7 @@ class MemberExtension extends DataExtension
      */
     private static $indexes = [
         'IsPwnedPassword' => true,
-        'PwnedPasswordNotify' => true,
-        'BreachCount' => true,
-        'BreachNotify' => true,
-        'BreachCheckNext' => true
+        'PwnedPasswordNotify' => true
     ];
 
     /**
@@ -60,10 +48,6 @@ class MemberExtension extends DataExtension
         $fields['IsPwnedPassword'] = _t(
             Pwnage::class . '.PWNED_PASSWORD_DESC_SHORT',
             'Password in breach'
-        );
-        $fields['BreachCount'] = _t(
-            Pwnage::class . '.BREACH_ACCT_DESC_SHORT',
-            'Account breach count'
         );
     }
 
@@ -89,7 +73,7 @@ class MemberExtension extends DataExtension
     public function updateCMSFields(FieldList $fields)
     {
         $fields->removeByName([
-            'BreachNotify','PwnedPasswordNotify','BreachedSiteHash','BreachCheckNext'
+            'PwnedPasswordNotify'
         ]);
 
         if ($confirmed_password_field = $fields->dataFieldByName('Password')) {
@@ -115,81 +99,6 @@ class MemberExtension extends DataExtension
             )
         );
 
-        $fields->insertAfter(
-            'Email',
-            ReadonlyField::create(
-                'BreachCount',
-                _t(
-                    Pwnage::class . ".BREACH_ACCT_DESC",
-                    'The number of times the account email address was seen in a breach by HIBP'
-                )
-            )
-        );
-
-        $fields->insertAfter(
-            'BreachCount',
-            ReadonlyField::create(
-                'BreachNotifyLast',
-                _t(
-                    Pwnage::class . ".BREACH_NOTIFY_LAST",
-                    'When the account holder was last notified of a breach'
-                )
-            )
-        );
-
-
     }
 
-    public function onBeforeWrite()
-    {
-        if ($this->owner->exists() && $this->owner->isChanged('Email')) {
-            $this->owner->BreachCount = 0;
-            $this->owner->BreachNotify = 0;
-            $this->owner->BreachNotifyLast = null;
-            $this->owner->BreachedSiteHash = '';
-        }
-    }
-
-    /**
-     * Test to see whether the member requires a notification
-     * @return boolean
-     * @throws \Exception
-     */
-    public function requiresBreachedAccountNotification() {
-
-        try {
-            // current hash
-            $current_hash = $this->owner->BreachedSiteHash;
-            $pwnage = Injector::inst()->create(Pwnage::class);
-            if(!is_string($this->owner->Email)) {
-                throw new \Exception("Invalid account email");
-            }
-
-            $breaches = $pwnage->checkBreachedAccount($this->owner->Email);
-            // always store the breach count
-            $this->owner->BreachCount = count($breaches);
-
-            // Get the list of breaches by name
-            $list = [];
-            foreach($breaches as $breach) {
-                $list[] = ($breach instanceof \MFlor\Pwned\Models\Breach) ? $breach->getName() : $breach->Name;
-            }
-
-            if(empty($list) && empty($current_hash)) {
-                // no change
-                return false;
-            }
-
-            // create a new hash
-            sort($list, SORT_REGULAR);
-            $hash = hash("sha256", implode(",", $list));
-            $this->owner->BreachedSiteHash = $hash;
-
-            // return if the hashes differ, this means the breach list hash changed
-            return $current_hash != $hash;
-
-        } catch (\Exception $e) {
-            return false;
-        }
-    }
 }
