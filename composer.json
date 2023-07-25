@@ -1,6 +1,6 @@
 {
     "name": "nswdpc/silverstripe-pwnage-hinter",
-    "description": "Check if members have appeared in data breaches and/or whether they are using passwords that have appeared in a data breach",
+    "description": "Verify hashed passwords against HIBP",
     "type": "silverstripe-vendormodule",
     "license": "BSD-3-Clause",
     "keywords": [

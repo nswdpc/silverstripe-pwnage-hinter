@@ -1,6 +1,6 @@
 # Silverstripe pwnage hinter
 
-This module checks for passwords and (optionally) account email addresses that have appeared in data breaches and either disallows the password or warns the account holder of a pwned password.
+This module allows verification of hashed passwords against the HIBP corpus.
 
 For more information on how the Pwned Password API works, including how compromised password hashes are sent to the API, please read: https://haveibeenpwned.com/API/v3#PwnedPasswords
 
@@ -16,11 +16,9 @@ In addition to password checking it can optionally check for breaches linked to 
 
 From a Silverstripe perspective, the module:
 
-+ checks for pwned passwords and optionally prohibits their use via a ```PasswordValidator``` extension
-+ if an API key is present, checks for breaches linked to a member email address via a ```Member``` extension
-+ flags accounts that have appeared in a breach
-+ notifies account holders if their email appears in a breach
-+ sends digest emails containing volume of breached account / pwned passwords to a a group or groups
++ checks for pwned passwords and prohibits their use via a ```PasswordValidator``` extension
++ flag relevant records
++ sends digest emails containing volume of pwned passwords
 
 ## Configuration
 

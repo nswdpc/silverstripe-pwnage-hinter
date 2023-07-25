@@ -25,12 +25,6 @@ class Pwnage
     private static $hibp_api_key = '';
 
     /**
-     * Whether to check breached accounts as well
-     * @var boolean
-     */
-    private static $check_breached_accounts = false;
-
-    /**
      * By default, check against configured pwned password corpus
      * @var boolean
      */
@@ -44,32 +38,11 @@ class Pwnage
     private static $allow_pwned_passwords = false;
 
     /**
-     * Whether to lock the account on breach
-     * This is not currently implemented
-     * @var boolean
-     */
-    private static $lock_account_on_breach = false;// TODO
-
-    /**
-     * Notify member on breach detection
-     * This is not currently implemented
-     * @var int
-     */
-    private static $notify_member_on_breach_detection = false;
-
-    /**
-     * Notify admin(s) on breach detection
-     * This is not currently implemented
-     * @var int
-     */
-    private static $notify_breach_account_digest = true;
-
-    /**
      * Adds padding (Add-Padding in the API) to pwned password lookups
      * Read https://haveibeenpwned.com/API/v3#PwnedPasswordsPadding prior to changing to false
      * @var boolean
      */
-    private static $pwned_password_include_padding = true;
+    private static $hibp_include_padding = true;
 
     /**
      * HIBP breach option - when true, returns only the name of the breach.
