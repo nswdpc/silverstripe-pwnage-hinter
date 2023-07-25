@@ -53,18 +53,15 @@ class MemberExtension extends DataExtension
 
     public function setPasswordValidationInformation(FormField $field)
     {
-        $validator = PasswordValidator::create();
-        $min_length = $validator->config()->get('min_length');
-        $field->setDescription(
-            '<div class="alert alert-info">'
-            . _t(
-                    Pwnage::class . '.PASSWORD_MIN_LENGTH',
-                    'Minimum length: {min_length} characters',
-                    [
-                        'min_length' => $min_length
-                    ]
-                )
-            . '</div>');
+        $validator = Injector::inst()->get(PasswordValidator::class);
+        $min_length = $validator->getMinLength();
+        $field->setDescription(_t(
+            Pwnage::class . '.PASSWORD_MIN_LENGTH',
+            'Minimum length: {min_length} characters',
+            [
+                'min_length' => $min_length
+            ]
+        ));
     }
 
     /**
