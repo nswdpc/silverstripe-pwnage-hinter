@@ -8,12 +8,6 @@ Configuration settings prefixed `hibp_` are specific to the haveibeenpwned and p
 
 ## General options
 
-### check_breached_accounts
-
-Turn on/off breached account checked. Not much use turning this on if you don't have an API key ^
-
-Default: false
-
 ### allow_pwned_passwords
 
 Whether to allow compromised passwords or not
@@ -24,39 +18,13 @@ Recommended: false
 
 When this is set to true, the usage of a pwned password is logged against the member record.
 
-### lock_account_on_breach
-
-**(reserved)**
-
-Whether to lock the Member account when a breach is found
-
-Not in use.
-
-Default : false
-
-### notify_member_on_breach_detection
-
-Whether to notify the Member account by email if their account is found to be in a known data breach.
-
-Default : false
-
-Recommended: false
-
-Turning this on requires forward planning & careful consideration of how account holders will react to messages regarding breaches.
-
 ### digest_permission_code
 
 Permission code to use for group selection of digest recipients.
 
-Anyone in this group will receive digest emails regarding pwned password / breached account volumes.
+Anyone in this group will receive digest emails regarding pwned password volumes.
 
 Default: ADMIN
-
-### notify_breach_account_digest
-
-When true a digest email will be sent to users with the permission of `digest_permission_code` containing a count of breached accounts
-
-Default : true
 
 ### notify_pwned_password_digest
 

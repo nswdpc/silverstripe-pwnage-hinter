@@ -91,7 +91,7 @@ class MemberExtension extends DataExtension
             )->setRightTitle(
                 _t(
                     Pwnage::class . ".ATTRIBUTION",
-                    "We use the 'Have I Been Pwned' service (HIBP) to check whether your password or account has appeared in a data breach. The service is used under the terms of the Creative Commons Attribution 4.0 International License."
+                    "We use the 'Have I Been Pwned' service (HIBP) to check whether your password has appeared in a data breach. The service is used under the terms of the Creative Commons Attribution 4.0 International License."
                 )
             )
         );
