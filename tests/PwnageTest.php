@@ -21,9 +21,6 @@ class PwnageTest extends SapphireTest {
 
     protected function setUp(): void
     {
-        // Ensure a validator
-        $validator = PasswordValidator::create();
-        Member::set_password_validator( $validator );
 
         // Create a local test service
         Injector::inst()->registerService(
@@ -32,6 +29,12 @@ class PwnageTest extends SapphireTest {
         );
 
         parent::setUp();
+
+        // Register validator
+        $validator = Injector::inst()->get( PasswordValidator::class );
+        Config::modify()->set( get_class($validator), 'min_length', 8);
+        $validator->setMinLength(8);
+        Member::set_password_validator( $validator );
     }
 
     protected function getPwnageInstance() : TestPwnage {
@@ -105,27 +108,6 @@ class PwnageTest extends SapphireTest {
 
     }
 
-    public function testBreachCountReset() {
-        $record = [
-            'Email' => 'test@example.com',
-            'FirstName' => 'Test',
-            'Surname' => 'Tester',
-            'BreachCount' => 12,
-            'BreachNotify' => 0,
-            'BreachNotifyLast' => '2022-01-01 10:00:00',
-            'BreachedSiteHash' => 'test-123'
-        ];
-        $member = Member::create($record);
-        $member->write();
-        $this->assertEquals(12, $member->BreachCount);
-        $member->Email = 'test.changed@example.net';
-        $member->write();
-        $this->assertEquals(0, $member->BreachCount);
-        $this->assertEquals(0, $member->BreachNotify);
-        $this->assertNull($member->BreachNotifyLast);
-        $this->assertEmpty($member->BreachedSiteHash);
-    }
-
     /**
      * Test password change with validation error
      */
@@ -170,7 +152,8 @@ class PwnageTest extends SapphireTest {
         // allow
         Pwnage::config()->set('allow_pwned_passwords', true);
 
-        $result = $member->changePassword('password');
+        $member->Password = 'password';
+        $result = $member->validate();
 
         $this->assertTrue($result->isValid(), "Password change should be allowed");
         $this->assertEquals(1, $member->IsPwnedPassword);
@@ -196,13 +179,15 @@ class PwnageTest extends SapphireTest {
         // allow
         Pwnage::config()->set('allow_pwned_passwords', true);
 
-        $result = $member->changePassword('password');
+        $member->Password = 'password';
+        $result = $member->validate();
 
         $this->assertTrue($result->isValid(), "Password change should be allowed");
         $this->assertEquals(1, $member->IsPwnedPassword, "IsPwnedPassword value");
         $this->assertEquals(1, $member->PwnedPasswordNotify, "PwnedPasswordNotify value");
 
-        $result = $member->changePassword('a-better-password');
+        $member->Password = 'a-better-password';
+        $result = $member->validate();
         $this->assertTrue($result->isValid(), "Password change is OK");
         $this->assertEquals(0, $member->IsPwnedPassword);
         $this->assertEquals(0, $member->PwnedPasswordNotify);

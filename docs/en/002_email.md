@@ -29,17 +29,3 @@ Default: 'Account notifier'
 ## Templates
 
 Email templates can be overridden in your theme, just place the following includes and templates in the same location in your theme/<theme_name>/templates directory and edit as required. The templates shipped with this module are provided as a guide.
-
-```
-Includes
-    PwnageEmailHeader.ss -> email header
-    PwnageEmailFooter.ss -> email footer
-NSWDPC
-    Pwnage
-        BreachDigestContent.ss -> template used to hold content for recipients of the digest
-        BreachedAccountDigest.ss -> the email template for breached account digest emails
-        BreachedAccountNotification.ss -> the email template for breached account notifications
-        MemberBreach.ss -> content part for the BreachedAccountNotification email
-        PasswordDigestContent.ss -> template used to hold content for recipients of the digest
-        PwnedPasswordDigest.ss -> the email template for pwned password digest emails
-```
