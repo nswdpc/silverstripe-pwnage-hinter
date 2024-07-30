@@ -1,22 +1,41 @@
 # Configuration
 
-The following values are configurable.
+The following configuration values are availabble and set on the `Pwnage` class.
 
 Configuration settings prefixed `hibp_` are specific to the haveibeenpwned and pwnedpassword APIs.
 
 > To check for breached accounts using an email address, you must purchase a haveibeenpwned API key
 
+You can override this options in your project's config.yml in the usual Silverstripe way. Example:
+
+```yml
+---
+Name: 'app-pwnage'
+After:
+  - '#nswdpc_silverstripe_pwnage_hinter'
+---
+NSWDPC\Pwnage\Pwnage:
+  # never notify
+  notify_pwned_password_digest: false
+```
+
 ## General options
+
+### check_pwned_passwords
+
+Turn on/off checking for pwned passwords during password validation. When this is set to `false` the password in the validation process will not be checked.
+
+Default: true
+
+Recommended: true
 
 ### allow_pwned_passwords
 
-Whether to allow compromised passwords or not
+Whether to allow compromised passwords or not. When this is set to true, the usage of a pwned password is logged against the member record.
 
 Default: false
 
 Recommended: false
-
-When this is set to true, the usage of a pwned password is logged against the member record.
 
 ### digest_permission_code
 
@@ -29,6 +48,8 @@ Default: ADMIN
 ### notify_pwned_password_digest
 
 When true a digest email will be sent to users with the permission of `digest_permission_code` containing a count of accounts with pwned password flags
+
+Notifications are only sent when the queued job `PwnedPasswordDigestJob` is active.
 
 Default : true
 

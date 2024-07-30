@@ -1,24 +1,20 @@
-# Silverstripe pwnage hinter
+# Silverstripe pwnage hinting
 
-This module allows verification of hashed passwords against the HIBP corpus.
+This module allows checking of passwords against the HIBP corpus.
 
-For more information on how the Pwned Password API works, including how compromised password hashes are sent to the API, please read: https://haveibeenpwned.com/API/v3#PwnedPasswords
-
-> This module is under active development and should not be considered production-ready just yet
->
-> We welcome testing and feedback via the Github issue tracker
+For more information on how the Pwned Password API works, including how password hashes are sent to the API, please read: https://haveibeenpwned.com/API/v3#PwnedPasswords
 
 ## Background
 
 This module uses [MFlor/pwned](https://github.com/MFlor/pwned) to interface with the Password and Breach API.
 
-In addition to password checking it can optionally check for breaches linked to a supplied email address, which requires an API key to be purchased from [haveibeenpwned](https://haveibeenpwned.com/API/Key)
-
 From a Silverstripe perspective, the module:
 
-+ checks for pwned passwords and prohibits their use via a ```PasswordValidator``` extension
-+ flag relevant records
-+ sends digest emails containing volume of pwned passwords
++ checks for pwned passwords and optionally prohibits (by default) their use via a `PasswordValidator` extension
++ flags relevant records
++ optionally sends digest emails containing volume of pwned passwords
+
+In addition to password checking it can be used to check for breaches, or a count of breaches, linked to a supplied email address. Breach checking requires an API key to be purchased from [haveibeenpwned](https://haveibeenpwned.com/API/Key)
 
 ## Configuration
 
@@ -38,13 +34,16 @@ Read [the email documentation](./docs/en/002_email.md) for information about ema
 
 ## Maintainers
 
-+ [dpcdigital@NSWDPC:~$](https://dpc.nsw.gov.au)
-
+PD web team
 ## Bugtracker
 
 We welcome bug reports, pull requests and feature requests on the Github Issue tracker for this project.
 
 Please review the [code of conduct](./code-of-conduct.md) prior to opening a new issue.
+
+## Security
+
+If you have found a security issue with this module, please email digital[@]dpc.nsw.gov.au in the first instance, detailing your findings.
 
 ## Development and contribution
 
