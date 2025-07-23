@@ -11,6 +11,7 @@ use SilverStripe\Core\Extension;
 
 /**
  * Extends {@link SilverStripe\Security\PasswordValidator} to provide pwnage smarts
+ * @extends \SilverStripe\Core\Extension<(\SilverStripe\Security\PasswordValidator & static)>
  */
 class PwnageValidator extends Extension
 {
@@ -19,8 +20,6 @@ class PwnageValidator extends Extension
      * Validate the password against the Pwmnage providers configured and set values on the Member record
      * @param string $password
      * @param Member $member
-     * @param ValidationResult $validation_result
-     * @param PasswordValidator $validator
      * @return void
      * @todo log an error on service/api/network failure ?
      */
@@ -30,6 +29,7 @@ class PwnageValidator extends Extension
             // no need to continue with validation here as the password is already invalid for some reason
             return;
         }
+
         if (Pwnage::config()->get('check_pwned_passwords')) {
             try {
                 $pwnage = Injector::inst()->create(Pwnage::class);
@@ -66,7 +66,7 @@ class PwnageValidator extends Extension
                     $member->IsPwnedPassword = 0;
                     $member->PwnedPasswordNotify = 0;
                 }
-            } catch (\Exception $e) {
+            } catch (\Exception) {
                 // log an error ?
             }
         }

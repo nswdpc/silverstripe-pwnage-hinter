@@ -21,7 +21,7 @@ class PwnedPasswordDigestJob extends AbstractQueuedJob
     /**
      * Requeue job in (seconds)
      */
-    private static $requeue_in = 86400;
+    private static int $requeue_in = 86400;
 
     /**
      * @return string
@@ -120,9 +120,12 @@ class PwnedPasswordDigestJob extends AbstractQueuedJob
         if(!$requeue_in || $requeue_in <= 0) {
             return null;
         }
+
         $job = new PwnedPasswordDigestJob();
         $dt = new \DateTime();
         $dt->modify("+{$requeue_in} seconds");
+
         singleton(QueuedJobService::class)->queueJob($job, $dt->format('Y-m-d H:i:s'));
+        return null;
     }
 }

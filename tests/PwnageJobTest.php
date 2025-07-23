@@ -27,6 +27,7 @@ class PwnageJobTest extends SapphireTest {
 
     protected static $fixture_file = "./PwnageJobTest.yml";
 
+    #[\Override]
     protected function setUp(): void
     {
         // Ensure a validator
@@ -43,20 +44,19 @@ class PwnageJobTest extends SapphireTest {
     }
 
     protected function getPwnageInstance() : TestPwnage {
-        $pwnage = Injector::inst()->create(Pwnage::class);
         /* @phpstan-ignore return.type */
-        return $pwnage;
+        return Injector::inst()->create(Pwnage::class);
     }
 
-    public function testPwnedPasswordDigestJob() {
+    public function testPwnedPasswordDigestJob(): void {
         $totalMembers = 100;
-        $members = [];
-        $forDigest = $notForDigest = 0;
+        $forDigest = 0;
+        $notForDigest = 0;
         for($m=0;$m<$totalMembers;$m++) {
             $member = Member::create([
                 'FirstName' => "First {$m}",
                 'Surname' => "Last {$m}",
-                'IsPwnedPassword' => rand(0,1)
+                'IsPwnedPassword' => random_int(0,1)
             ]);
             $member->write();
             if($member->IsPwnedPassword == 1) {
@@ -87,7 +87,7 @@ class PwnageJobTest extends SapphireTest {
 
         $email = $this->findEmail($to, $from, $subject);
 
-        $this->assertTrue( strpos($email['PlainContent'], $warning) !== false );
+        $this->assertTrue( str_contains((string) $email['PlainContent'], $warning) );
 
     }
 
