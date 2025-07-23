@@ -16,12 +16,11 @@ class PwnageValidator extends Extension
 {
     /**
      * Validate the password against the Pwmnage providers configured and set values on the Member record
-     * @param string $password
      * @param Member $member
      * @return void
      * @todo log an error on service/api/network failure ?
      */
-    public function updateValidatePassword($password, $member, ValidationResult $validation_result, PasswordValidator $validator)
+    public function updateValidatePassword(string $password, $member, ValidationResult $validation_result, PasswordValidator $validator)
     {
         if (!$validation_result->isValid()) {
             // no need to continue with validation here as the password is already invalid for some reason

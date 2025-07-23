@@ -81,6 +81,7 @@ class Pwnage
         if (!$code) {
             return false;
         }
+
         return Permission::get_groups_by_permission($code);
     }
 

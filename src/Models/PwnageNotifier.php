@@ -32,7 +32,7 @@ class PwnageNotifier
 
         $to = $this->getRecipients($member, $group);
 
-        if (empty($to)) {
+        if ($to === []) {
             // no one to send to...
             throw new \Exception("No recipients found for email with template {$template}");
         }
