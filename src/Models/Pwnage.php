@@ -101,7 +101,7 @@ class Pwnage
             return $occurences;
         } catch (\Exception $exception) {
             // TODO log?
-            $error = in_array($exception->getMessage(), ['', '0'], true) ? 'unknown error' : $exception->getMessage();
+            $error = $exception->getMessage();
         }
 
         throw new ApiException($error);
@@ -152,7 +152,7 @@ class Pwnage
             $result = $this->checkBreachedAccount($email_address);
             return count($result);
         } catch (\Exception $exception) {
-            $error = in_array($exception->getMessage(), ['', '0'], true) ? "unknown" : $exception->getMessage();
+            $error = $exception->getMessage();
         }
 
         throw new ApiException($error);
