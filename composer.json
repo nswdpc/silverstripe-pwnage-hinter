@@ -14,7 +14,7 @@
         "security"
     ],
     "require": {
-        "mflor/pwned" : "^4",
+        "mflor/pwned" : "^5",
         "symbiote/silverstripe-queuedjobs" : "^5",
         "symbiote/silverstripe-multivaluefield" : "^6",
         "silverstripe/framework" : "^5"
