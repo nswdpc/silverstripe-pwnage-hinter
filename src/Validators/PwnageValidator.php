@@ -6,7 +6,6 @@ use SilverStripe\Security\PasswordValidator;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\ORM\ValidationResult;
 use SilverStripe\Security\Member;
-use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Extension;
 
 /**
@@ -15,7 +14,6 @@ use SilverStripe\Core\Extension;
  */
 class PwnageValidator extends Extension
 {
-
     /**
      * Validate the password against the Pwmnage providers configured and set values on the Member record
      * @param string $password

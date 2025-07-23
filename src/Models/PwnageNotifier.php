@@ -13,7 +13,6 @@ use SilverStripe\Security\Member;
  */
 class PwnageNotifier
 {
-
     use Configurable;
     use Extensible;
 
@@ -33,7 +32,7 @@ class PwnageNotifier
 
         $to = $this->getRecipients($member, $group);
 
-        if(empty($to)) {
+        if (empty($to)) {
             // no one to send to...
             throw new \Exception("No recipients found for email with template {$template}");
         }
@@ -45,7 +44,7 @@ class PwnageNotifier
         $email->setHTMLTemplate($template);
 
         $data['FontFamily'] = self::config()->get('font_family');
-        if(!$data['FontFamily']) {
+        if (!$data['FontFamily']) {
             $data['FontFamily'] = 'sans-serif';
         }
 
@@ -75,21 +74,22 @@ class PwnageNotifier
     /**
      * @return mixed[]
      */
-    public function getRecipients(Member $member = null, Group $group = null): array {
+    public function getRecipients(Member $member = null, Group $group = null): array
+    {
         $to = [];
 
         if (!$member instanceof \SilverStripe\Security\Member && !$group instanceof \SilverStripe\Security\Group) {
             // cannot notify
             return [];
         } elseif ($member && !$group instanceof \SilverStripe\Security\Group) {
-            if(Email::is_valid_address($member->Email)) {
+            if (Email::is_valid_address($member->Email)) {
                 $to[$member->Email] = $member->getName();
             }
         } else {
             // group email - each member gets an email
             $members = $group->Members();
-            foreach($members as $member) {
-                if(Email::is_valid_address($member->Email)) {
+            foreach ($members as $member) {
+                if (Email::is_valid_address($member->Email)) {
                     $to[$member->Email] = $member->getName();
                 }
             }

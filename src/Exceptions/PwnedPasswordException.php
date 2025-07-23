@@ -2,4 +2,6 @@
 
 namespace NSWDPC\Pwnage;
 
-class PwnedPasswordException extends \Exception {}
+class PwnedPasswordException extends \Exception
+{
+}

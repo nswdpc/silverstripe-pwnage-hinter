@@ -14,7 +14,6 @@ use SilverStripe\Security\Permission;
  */
 class Pwnage
 {
-
     use Configurable;
     use Injectable;
 
@@ -68,16 +67,18 @@ class Pwnage
     /**
      * Return the Pwned API client
      */
-    protected function getClient($api_key = null) : Pwned {
+    protected function getClient($api_key = null): Pwned
+    {
         return new Pwned($api_key);
     }
 
     /**
      * Get groups that can be notified of pwned passwords
      */
-    public function getDigestNotificationGroups() {
+    public function getDigestNotificationGroups()
+    {
         $code = self::config()->get('digest_permission_code');
-        if(!$code) {
+        if (!$code) {
             return false;
         }
         return Permission::get_groups_by_permission($code);
@@ -94,8 +95,8 @@ class Pwnage
             $pwned = $this->getClient();
             // note: {@link MFlor\Pwned\Repositories\PasswordRepository} hashes the password as required
             $occurences = $pwned->passwords()->occurrences(
-                            $password_plaintext,
-                            self::config()->get('hibp_include_padding')
+                $password_plaintext,
+                self::config()->get('hibp_include_padding')
             );
             return $occurences;
         } catch (\Exception $exception) {
@@ -110,7 +111,7 @@ class Pwnage
      * Check email address using {@link MFlor\Pwned\Pwned} service client
      * @returns array
      */
-    public function checkBreachedAccount(string $email_address) : array
+    public function checkBreachedAccount(string $email_address): array
     {
         if (!Email::is_valid_address($email_address)) {
             throw ValidationException::create(

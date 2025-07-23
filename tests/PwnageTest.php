@@ -4,7 +4,6 @@ namespace NSWDPC\Pwnage\Tests;
 
 use NSWDPC\Pwnage\Pwnage;
 use NSWDPC\Pwnage\ApiException;
-use NSWDPC\Pwnage\PwnedPasswordException;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Injector\Injector;
@@ -13,8 +12,8 @@ use SilverStripe\Dev\SapphireTest;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\PasswordValidator;
 
-class PwnageTest extends SapphireTest {
-
+class PwnageTest extends SapphireTest
+{
     use Configurable;
 
     protected $usesDatabase = true;
@@ -32,18 +31,20 @@ class PwnageTest extends SapphireTest {
         parent::setUp();
 
         // Register validator
-        $validator = Injector::inst()->get( PasswordValidator::class );
-        Config::modify()->set( $validator::class, 'min_length', 8);
+        $validator = Injector::inst()->get(PasswordValidator::class);
+        Config::modify()->set($validator::class, 'min_length', 8);
         $validator->setMinLength(8);
-        Member::set_password_validator( $validator );
+        Member::set_password_validator($validator);
     }
 
-    protected function getPwnageInstance() : TestPwnage {
+    protected function getPwnageInstance(): TestPwnage
+    {
         /* @phpstan-ignore return.type */
         return Injector::inst()->create(Pwnage::class);
     }
 
-    public function testPwnedPasswordApiOccurences(): void {
+    public function testPwnedPasswordApiOccurences(): void
+    {
         try {
             $pwnage = $this->getPwnageInstance();
             $errors = [];
@@ -58,7 +59,8 @@ class PwnageTest extends SapphireTest {
 
     }
 
-    public function testPwnedPasswordApiNoOccurences(): void {
+    public function testPwnedPasswordApiNoOccurences(): void
+    {
 
         try {
             $pwnage = $this->getPwnageInstance();
@@ -74,7 +76,8 @@ class PwnageTest extends SapphireTest {
 
     }
 
-    public function testBreachedAccountApiNoKey(): void {
+    public function testBreachedAccountApiNoKey(): void
+    {
 
         try {
             Config::modify()->set(Pwnage::class, 'hibp_api_key', '');
@@ -91,7 +94,8 @@ class PwnageTest extends SapphireTest {
 
     }
 
-    public function testBreachedAccountWithTestApiKey(): void {
+    public function testBreachedAccountWithTestApiKey(): void
+    {
 
         try {
             Config::modify()->set(Pwnage::class, 'hibp_api_key', 'test-api-key');
@@ -112,7 +116,8 @@ class PwnageTest extends SapphireTest {
     /**
      * Test password change with validation error
      */
-    public function testMemberChangePasswordInvalid(): void {
+    public function testMemberChangePasswordInvalid(): void
+    {
 
         $this->getPwnageInstance();
 
@@ -138,7 +143,8 @@ class PwnageTest extends SapphireTest {
     /**
      * Test password change with warning flag
      */
-    public function testMemberChangePasswordInvalidAllowed(): void {
+    public function testMemberChangePasswordInvalidAllowed(): void
+    {
 
         $this->getPwnageInstance();
 
@@ -165,7 +171,8 @@ class PwnageTest extends SapphireTest {
     /**
      * Given a member, test email and password changes
      */
-    public function testMemberChangePasswordTwice(): void {
+    public function testMemberChangePasswordTwice(): void
+    {
 
         $this->getPwnageInstance();
 
@@ -198,7 +205,8 @@ class PwnageTest extends SapphireTest {
     /**
      * Given a member, test email and password changes
      */
-    public function testMemberChangePasswordValid(): void {
+    public function testMemberChangePasswordValid(): void
+    {
 
         $this->getPwnageInstance();
 

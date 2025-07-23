@@ -8,7 +8,6 @@ use SilverStripe\Security\Member;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\ORM\FieldType\DBField;
-use SilverStripe\ORM\FieldType\DBDatetime;
 use SilverStripe\View\ArrayData;
 
 /**
@@ -36,7 +35,7 @@ class PwnedPasswordDigestJob extends AbstractQueuedJob
 
         $pwnage = Injector::inst()->create(Pwnage::class);
 
-        if(!Pwnage::config()->get('notify_pwned_password_digest')) {
+        if (!Pwnage::config()->get('notify_pwned_password_digest')) {
             // turned off
             $this->addMessage("Not sending, notify_pwned_password_digest is off");
             $this->isComplete = true;
@@ -46,7 +45,7 @@ class PwnedPasswordDigestJob extends AbstractQueuedJob
         // by default this gets groups with the 'ADMIN' permission
         $groups = $pwnage->getDigestNotificationGroups();
 
-        if(!$groups || $groups->count() == 0) {
+        if (!$groups || $groups->count() == 0) {
             // no groups to notify
             $this->addMessage("Not sending, no groups to notify - is the permission code configured?");
             $this->isComplete = true;
@@ -66,7 +65,7 @@ class PwnedPasswordDigestJob extends AbstractQueuedJob
         );
 
         $warning = "";
-        if($member_count > 0) {
+        if ($member_count > 0) {
             $warning = _t(
                 Pwnage::class . ".NON_ZERO_PWNED_PASSWORDS",
                 "There are {member_count} accounts flagged as having a pwned password",
@@ -82,23 +81,23 @@ class PwnedPasswordDigestJob extends AbstractQueuedJob
             'Title' => $subject,
             'Warning' => $warning,
             'Content' => DBField::create_field(
-                            'HTMLText',
-                            $content_data->customise([
-                                'MemberCount' => $member_count
-                            ])->renderWith('NSWDPC/Pwnage/PasswordDigestContent')
+                'HTMLText',
+                $content_data->customise([
+                    'MemberCount' => $member_count
+                ])->renderWith('NSWDPC/Pwnage/PasswordDigestContent')
             ),
             'Footer' => strip_tags(
-                            _t(
-                                Pwnage::class . ".ATTRIBUTION",
-                                "We use the 'Have I Been Pwned' service to check whether"
+                _t(
+                    Pwnage::class . ".ATTRIBUTION",
+                    "We use the 'Have I Been Pwned' service to check whether"
                                 . " your password has appeared in a data breach"
                                 . " under the terms of the Creative Commons Attribution 4.0"
                                 . " International License."
-                            )
+                )
             )
         ];
 
-        foreach($groups as $group) {
+        foreach ($groups as $group) {
             $this->currentStep += 1;
             $this->addMessage("Sending digest to group {$group->Title}");
             $notifier->sendNotification(
@@ -117,7 +116,7 @@ class PwnedPasswordDigestJob extends AbstractQueuedJob
     public function afterComplete()
     {
         $requeue_in = self::config()->get('requeue_in');
-        if(!$requeue_in || $requeue_in <= 0) {
+        if (!$requeue_in || $requeue_in <= 0) {
             return null;
         }
 

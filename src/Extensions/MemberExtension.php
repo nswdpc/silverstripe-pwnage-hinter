@@ -3,7 +3,6 @@
 namespace NSWDPC\Pwnage;
 
 use SilverStripe\ORM\DataExtension;
-use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Forms\ConfirmedPasswordField;
 use SilverStripe\Forms\FieldList;
@@ -19,7 +18,6 @@ use SilverStripe\Security\PasswordValidator;
  */
 class MemberExtension extends DataExtension
 {
-
     private static array $db = [
         'IsPwnedPassword' => 'Boolean',
         'PwnedPasswordNotify' => 'Boolean'// optional flag to notify admin of pwned password

@@ -13,7 +13,8 @@ class TestPwnage extends Pwnage
      * Return the Pwned API client
      */
     #[\Override]
-    protected function getClient($api_key = null) : TestPwned {
+    protected function getClient($api_key = null): TestPwned
+    {
         return new TestPwned($api_key);
     }
 }

@@ -12,13 +12,12 @@ use MFlor\Pwned\Repositories\PasteRepository;
  */
 class TestPwned extends Pwned
 {
-
     #[\Override]
     public function breaches(): BreachRepository
     {
         $testData = file_get_contents(__DIR__ . "/data/breach.json");
         $testClientService = new TestClientService();
-        return new BreachRepository( $testClientService->getClientWithResponse($testData) );
+        return new BreachRepository($testClientService->getClientWithResponse($testData));
     }
 
     #[\Override]
@@ -32,7 +31,7 @@ class TestPwned extends Pwned
     {
         $testData = file_get_contents(__DIR__ . "/data/passwords.txt");
         $testClientService = new TestClientService();
-        return new PasswordRepository( $testClientService->getClientWithResponse($testData) );
+        return new PasswordRepository($testClientService->getClientWithResponse($testData));
     }
 
 }

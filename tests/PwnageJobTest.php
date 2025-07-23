@@ -3,24 +3,15 @@
 namespace NSWDPC\Pwnage\Tests;
 
 use NSWDPC\Pwnage\Pwnage;
-use NSWDPC\Pwnage\ApiException;
-use NSWDPC\Pwnage\PwnedPasswordException;
 use NSWDPC\Pwnage\PwnedPasswordDigestJob;
-use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Injector\Injector;
-use SilverStripe\Control\Email\Email;
 use SilverStripe\Dev\SapphireTest;
-use SilverStripe\ORM\FieldType\DBField;
-use SilverStripe\ORM\FieldType\DBDate;
-use SilverStripe\ORM\FieldType\DBDatetime;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\PasswordValidator;
-use Symbiote\QueuedJobs\DataObjects\QueuedJobDescriptor;
-use Symbiote\QueuedJobs\Services\QueuedJob;
 
-class PwnageJobTest extends SapphireTest {
-
+class PwnageJobTest extends SapphireTest
+{
     use Configurable;
 
     protected $usesDatabase = true;
@@ -32,7 +23,7 @@ class PwnageJobTest extends SapphireTest {
     {
         // Ensure a validator
         $validator = PasswordValidator::create();
-        Member::set_password_validator( $validator );
+        Member::set_password_validator($validator);
 
         // Create a local test service
         Injector::inst()->registerService(
@@ -43,23 +34,25 @@ class PwnageJobTest extends SapphireTest {
         parent::setUp();
     }
 
-    protected function getPwnageInstance() : TestPwnage {
+    protected function getPwnageInstance(): TestPwnage
+    {
         /* @phpstan-ignore return.type */
         return Injector::inst()->create(Pwnage::class);
     }
 
-    public function testPwnedPasswordDigestJob(): void {
+    public function testPwnedPasswordDigestJob(): void
+    {
         $totalMembers = 100;
         $forDigest = 0;
         $notForDigest = 0;
-        for($m=0;$m<$totalMembers;$m++) {
+        for ($m = 0;$m < $totalMembers;$m++) {
             $member = Member::create([
                 'FirstName' => "First {$m}",
                 'Surname' => "Last {$m}",
-                'IsPwnedPassword' => random_int(0,1)
+                'IsPwnedPassword' => random_int(0, 1)
             ]);
             $member->write();
-            if($member->IsPwnedPassword == 1) {
+            if ($member->IsPwnedPassword == 1) {
                 $forDigest++;
             } else {
                 $notForDigest++;
@@ -87,7 +80,7 @@ class PwnageJobTest extends SapphireTest {
 
         $email = $this->findEmail($to, $from, $subject);
 
-        $this->assertTrue( str_contains((string) $email['PlainContent'], $warning) );
+        $this->assertTrue(str_contains((string) $email['PlainContent'], $warning));
 
     }
 
