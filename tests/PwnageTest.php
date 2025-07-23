@@ -10,7 +10,7 @@ use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Control\Email\Email;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\Security\Member;
-use SilverStripe\Security\PasswordValidator;
+use SilverStripe\Security\Validation\RulesPasswordValidator;
 
 class PwnageTest extends SapphireTest
 {
@@ -31,7 +31,7 @@ class PwnageTest extends SapphireTest
         parent::setUp();
 
         // Register validator
-        $validator = Injector::inst()->get(PasswordValidator::class);
+        $validator = Injector::inst()->get(RulesPasswordValidator::class);
         Config::modify()->set($validator::class, 'min_length', 8);
         $validator->setMinLength(8);
         Member::set_password_validator($validator);

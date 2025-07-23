@@ -2,7 +2,7 @@
 
 namespace NSWDPC\Pwnage;
 
-use SilverStripe\Security\PasswordValidator;
+use SilverStripe\Security\Validation\PasswordValidator;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Security\Member;
 use SilverStripe\Core\Extension;
