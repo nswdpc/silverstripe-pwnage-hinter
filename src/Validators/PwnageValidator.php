@@ -10,7 +10,7 @@ use SilverStripe\Core\Extension;
 
 /**
  * Extends {@link SilverStripe\Security\PasswordValidator} to provide pwnage smarts
- * @extends \SilverStripe\Core\Extension<(\SilverStripe\Security\PasswordValidator & static)>
+ * @extends \SilverStripe\Core\Extension<static>
  */
 class PwnageValidator extends Extension
 {
@@ -20,7 +20,7 @@ class PwnageValidator extends Extension
      * @return void
      * @todo log an error on service/api/network failure ?
      */
-    public function updateValidatePassword(string $password, $member, ValidationResult $validation_result, PasswordValidator $validator)
+    public function updateValidatePassword(string $password, $member, \SilverStripe\Core\Validation\ValidationResult $validation_result, PasswordValidator $validator)
     {
         if (!$validation_result->isValid()) {
             // no need to continue with validation here as the password is already invalid for some reason
@@ -44,7 +44,7 @@ class PwnageValidator extends Extension
                         );
 
                         // fail the validation process
-                        $validation_result->addError($error, ValidationResult::TYPE_ERROR, 'PWNED_PASSWORD');
+                        $validation_result->addError($error, \SilverStripe\Core\Validation\ValidationResult::TYPE_ERROR, 'PWNED_PASSWORD');
                     } else {
 
                         // password is allowed, with warning, also flag the account
@@ -56,7 +56,7 @@ class PwnageValidator extends Extension
                             Pwnage::class . ".PASSWORD_PWNED_WARNING",
                             'The password provided has appeared in at least one data breach. Please change your password immediately.'
                         );
-                        $validation_result->addMessage($error, ValidationResult::TYPE_WARNING, 'PWNED_PASSWORD');
+                        $validation_result->addMessage($error, \SilverStripe\Core\Validation\ValidationResult::TYPE_WARNING, 'PWNED_PASSWORD');
                     }
                 } else {
                     // reset to zero

@@ -75,7 +75,7 @@ class PwnedPasswordDigestJob extends AbstractQueuedJob
             );
         }
 
-        $content_data = ArrayData::create();
+        $content_data = \SilverStripe\Model\ArrayData::create();
 
         $data = [
             'Title' => $subject,

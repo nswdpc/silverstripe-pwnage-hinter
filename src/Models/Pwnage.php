@@ -115,7 +115,7 @@ class Pwnage
     public function checkBreachedAccount(string $email_address): array
     {
         if (!Email::is_valid_address($email_address)) {
-            throw ValidationException::create(
+            throw \SilverStripe\Core\Validation\ValidationException::create(
                 _t(
                     Pwnage::class . ".EMAIL_NOT_VALID",
                     "Email address provided is not valid"

@@ -14,9 +14,9 @@ use SilverStripe\Security\PasswordValidator;
  * Decorates SilverStripe\Security\Member with fields related to compromised passwords and breaches
  * @property bool $IsPwnedPassword
  * @property bool $PwnedPasswordNotify
- * @extends \SilverStripe\ORM\DataExtension<(\SilverStripe\Security\Member & static)>
+ * @extends \SilverStripe\Core\Extension<\SilverStripe\Security\Member&static>
  */
-class MemberExtension extends DataExtension
+class MemberExtension extends \SilverStripe\Core\Extension
 {
     private static array $db = [
         'IsPwnedPassword' => 'Boolean',
@@ -36,8 +36,7 @@ class MemberExtension extends DataExtension
     /**
      * Show summary fields
      */
-    #[\Override]
-    public function updateSummaryFields(&$fields)
+    public function updateSummaryFields(array &$fields)
     {
         $fields['IsPwnedPassword'] = _t(
             Pwnage::class . '.PWNED_PASSWORD_DESC_SHORT',
