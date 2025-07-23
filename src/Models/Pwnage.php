@@ -124,7 +124,7 @@ class Pwnage
     public function checkBreachedAccount(string $email_address) : array
     {
         if (!Email::is_valid_address($email_address)) {
-            throw new ValidationException(
+            throw ValidationException::create(
                 _t(
                     Pwnage::class . ".EMAIL_NOT_VALID",
                     "Email address provided is not valid"
@@ -155,18 +155,13 @@ class Pwnage
 
     /**
      * Get count of breaches for an account
-     * @returns int
      * @param string $email_address
      */
-    public function getBreachedAccountCount($email_address)
+    public function getBreachedAccountCount($email_address): int
     {
         try {
             $result = $this->checkBreachedAccount($email_address);
-            if (is_array($result)) {
-                return count($result);
-            } else {
-                return 0;
-            }
+            return count($result);
         } catch (\Exception $e) {
             $error = $e->getMessage() ?: "unknown";
         }

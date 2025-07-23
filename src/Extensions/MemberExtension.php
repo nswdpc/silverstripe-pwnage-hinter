@@ -2,9 +2,10 @@
 
 namespace NSWDPC\Pwnage;
 
-use Silverstripe\ORM\DataExtension;
+use SilverStripe\ORM\DataExtension;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Forms\ConfirmedPasswordField;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\ReadonlyField;
 use SilverStripe\Forms\FormField;
@@ -73,7 +74,8 @@ class MemberExtension extends DataExtension
             'PwnedPasswordNotify'
         ]);
 
-        if ($confirmed_password_field = $fields->dataFieldByName('Password')) {
+        $confirmed_password_field = $fields->dataFieldByName('Password');
+        if ($confirmed_password_field instanceof ConfirmedPasswordField) {
             $password_field = $confirmed_password_field->getPasswordField();
             if ($password_field) {
                 $this->setPasswordValidationInformation($password_field);

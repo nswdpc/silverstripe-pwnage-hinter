@@ -58,11 +58,16 @@ class PwnageNotifier
 
         $this->extend('updateNotificationEmail', $email);
 
-        $result = $email->send();
-
-        $this->extend('afterNotificationEmail', $email, $result);
-
-        return $result;
+        try {
+            $email->send();
+            $result = true;
+            $this->extend('afterNotificationEmail', $email, $result);
+            return true;
+        } catch (\Exception $exception) {
+            $result = false;
+            $this->extend('afterNotificationEmail', $email, $result);
+            return false;
+        }
 
     }
 

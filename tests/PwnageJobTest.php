@@ -13,7 +13,7 @@ use SilverStripe\Control\Email\Email;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\ORM\FieldType\DBField;
 use SilverStripe\ORM\FieldType\DBDate;
-use SilverStripe\ORM\FieldType\DBDateTime;
+use SilverStripe\ORM\FieldType\DBDatetime;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\PasswordValidator;
 use Symbiote\QueuedJobs\DataObjects\QueuedJobDescriptor;
@@ -35,7 +35,7 @@ class PwnageJobTest extends SapphireTest {
 
         // Create a local test service
         Injector::inst()->registerService(
-            new TestPwnage(),
+            TestPwnage::create(),
             Pwnage::class
         );
 
@@ -44,6 +44,7 @@ class PwnageJobTest extends SapphireTest {
 
     protected function getPwnageInstance() : TestPwnage {
         $pwnage = Injector::inst()->create(Pwnage::class);
+        /* @phpstan-ignore return.type */
         return $pwnage;
     }
 
@@ -86,7 +87,7 @@ class PwnageJobTest extends SapphireTest {
 
         $email = $this->findEmail($to, $from, $subject);
 
-        $this->assertNotNull( strpos($email['PlainContent'], $warning) !== false );
+        $this->assertTrue( strpos($email['PlainContent'], $warning) !== false );
 
     }
 

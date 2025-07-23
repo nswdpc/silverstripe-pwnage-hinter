@@ -24,7 +24,7 @@ class PwnageTest extends SapphireTest {
 
         // Create a local test service
         Injector::inst()->registerService(
-            new TestPwnage(),
+            TestPwnage::create(),
             Pwnage::class
         );
 
@@ -39,6 +39,7 @@ class PwnageTest extends SapphireTest {
 
     protected function getPwnageInstance() : TestPwnage {
         $pwnage = Injector::inst()->create(Pwnage::class);
+        /* @phpstan-ignore return.type */
         return $pwnage;
     }
 
