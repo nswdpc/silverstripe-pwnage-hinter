@@ -6,7 +6,6 @@ use MFlor\Pwned\Pwned;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\Control\Email\Email;
-use SilverStripe\ORM\ValidationException;
 use SilverStripe\Security\Permission;
 
 /**

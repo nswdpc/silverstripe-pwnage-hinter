@@ -4,7 +4,6 @@ namespace NSWDPC\Pwnage;
 
 use SilverStripe\Security\PasswordValidator;
 use SilverStripe\Core\Injector\Injector;
-use SilverStripe\ORM\ValidationResult;
 use SilverStripe\Security\Member;
 use SilverStripe\Core\Extension;
 

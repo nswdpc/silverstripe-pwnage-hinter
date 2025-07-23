@@ -2,7 +2,6 @@
 
 namespace NSWDPC\Pwnage;
 
-use SilverStripe\ORM\DataExtension;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Forms\ConfirmedPasswordField;
 use SilverStripe\Forms\FieldList;

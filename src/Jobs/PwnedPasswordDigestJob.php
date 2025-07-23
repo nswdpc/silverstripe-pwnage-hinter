@@ -8,7 +8,6 @@ use SilverStripe\Security\Member;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\ORM\FieldType\DBField;
-use SilverStripe\View\ArrayData;
 
 /**
  * Notify group(s) with pwned password count, not specific information
