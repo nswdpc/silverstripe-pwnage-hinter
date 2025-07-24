@@ -7,6 +7,7 @@ use SilverStripe\Forms\ConfirmedPasswordField;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\ReadonlyField;
 use SilverStripe\Forms\FormField;
+use SilverStripe\Security\Validation\PasswordValidator;
 use SilverStripe\Security\Validation\RulesPasswordValidator;
 
 /**
@@ -45,15 +46,17 @@ class MemberExtension extends \SilverStripe\Core\Extension
 
     public function setPasswordValidationInformation(FormField $field)
     {
-        $validator = Injector::inst()->get(RulesPasswordValidator::class);
-        $min_length = $validator->getMinLength();
-        $field->setDescription(_t(
-            Pwnage::class . '.PASSWORD_MIN_LENGTH',
-            'Minimum length: {min_length} characters',
-            [
-                'min_length' => $min_length
-            ]
-        ));
+        $validator = Injector::inst()->get(PasswordValidator::class);
+        if($validator && ($validator instanceof RulesPasswordValidator || method_exists($validator, 'getMinLength'))) {
+            $min_length = $validator->getMinLength();
+            $field->setDescription(_t(
+                Pwnage::class . '.PASSWORD_MIN_LENGTH',
+                'Minimum length: {min_length} characters',
+                [
+                    'min_length' => $min_length
+                ]
+            ));
+        }
     }
 
     public function updateCMSFields(FieldList $fields)
