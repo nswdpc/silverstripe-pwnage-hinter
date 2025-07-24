@@ -9,7 +9,7 @@ use SilverStripe\Core\Extension;
 
 /**
  * Extends {@link \SilverStripe\Security\Validation\PasswordValidator} to provide pwnage smarts
- * @extends \SilverStripe\Core\Extension<static>
+ * @extends \SilverStripe\Core\Extension<never>
  */
 class PwnageValidator extends Extension
 {
