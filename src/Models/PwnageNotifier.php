@@ -13,26 +13,26 @@ use SilverStripe\Security\Member;
  */
 class PwnageNotifier
 {
-
     use Configurable;
     use Extensible;
 
-    private static $font_family = "system-ui, BlinkMacSystemFont, 'Noto Sans', Helvetica, Arial, sans-serif, 'Noto Color Emoji', 'Apple Color Emoji'";
+    private static string $font_family = "system-ui, BlinkMacSystemFont, 'Noto Sans', Helvetica, Arial, sans-serif, 'Noto Color Emoji', 'Apple Color Emoji'";
 
-    private static $email_from = "noreply@localhost";
-    private static $email_from_name = "Account notifier";
+    private static string $email_from = "noreply@localhost";
+
+    private static string $email_from_name = "Account notifier";
 
     public function sendNotification(
-        $subject,
-        $template,
-        $data = [],
+        string $subject,
+        string $template,
+        array $data = [],
         Member $member = null,
         Group $group = null
-    ) {
+    ): bool {
 
         $to = $this->getRecipients($member, $group);
 
-        if(empty($to)) {
+        if ($to === []) {
             // no one to send to...
             throw new \Exception("No recipients found for email with template {$template}");
         }
@@ -44,7 +44,7 @@ class PwnageNotifier
         $email->setHTMLTemplate($template);
 
         $data['FontFamily'] = self::config()->get('font_family');
-        if(!$data['FontFamily']) {
+        if (!$data['FontFamily']) {
             $data['FontFamily'] = 'sans-serif';
         }
 
@@ -58,29 +58,38 @@ class PwnageNotifier
 
         $this->extend('updateNotificationEmail', $email);
 
-        $result = $email->send();
-
-        $this->extend('afterNotificationEmail', $email, $result);
-
-        return $result;
+        try {
+            $email->send();
+            $result = true;
+            $this->extend('afterNotificationEmail', $email, $result);
+            return true;
+        } catch (\Exception) {
+            $result = false;
+            $this->extend('afterNotificationEmail', $email, $result);
+            return false;
+        }
 
     }
 
-    public function getRecipients(Member $member = null, Group $group = null) {
+    /**
+     * @return mixed[]
+     */
+    public function getRecipients(Member $member = null, Group $group = null): array
+    {
         $to = [];
 
-        if(!$member && !$group) {
+        if (!$member instanceof \SilverStripe\Security\Member && !$group instanceof \SilverStripe\Security\Group) {
             // cannot notify
             return [];
-        } else if($member && !$group) {
-            if(Email::is_valid_address($member->Email)) {
+        } elseif ($member && !$group instanceof \SilverStripe\Security\Group) {
+            if (Email::is_valid_address($member->Email)) {
                 $to[$member->Email] = $member->getName();
             }
         } else {
             // group email - each member gets an email
             $members = $group->Members();
-            foreach($members as $member) {
-                if(Email::is_valid_address($member->Email)) {
+            foreach ($members as $member) {
+                if (Email::is_valid_address($member->Email)) {
                     $to[$member->Email] = $member->getName();
                 }
             }

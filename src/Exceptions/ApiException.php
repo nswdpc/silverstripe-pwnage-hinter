@@ -2,4 +2,6 @@
 
 namespace NSWDPC\Pwnage;
 
-class ApiException extends \Exception {}
+class ApiException extends \Exception
+{
+}

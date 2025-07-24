@@ -4,10 +4,10 @@ namespace NSWDPC\Pwnage;
 
 use SilverStripe\Forms\LiteralField;
 use SilverStripe\Core\Extension;
-use SilverStripe\Core\Config\Config;
 
 /**
  * Adds HIBP attribution information to the Security admin section
+ * @extends \SilverStripe\Core\Extension<(\SilverStripe\Admin\SecurityAdmin & static)>
  */
 class SecurityAdminExtension extends Extension
 {

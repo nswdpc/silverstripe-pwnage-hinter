@@ -14,13 +14,19 @@
         "security"
     ],
     "require": {
-        "mflor/pwned" : "^4",
+        "mflor/pwned" : "^5",
         "symbiote/silverstripe-queuedjobs" : "^5",
         "symbiote/silverstripe-multivaluefield" : "^6",
         "silverstripe/framework" : "^5"
     },
     "require-dev": {
+        "cambis/silverstripe-rector": "^2",
         "phpunit/phpunit": "^9.5",
+        "cambis/silverstan": "^2",
+        "nswdpc/ci-files": "dev-v-4",
+        "phpstan/phpstan": "^2",
+        "rector/rector": "^2",
+        "phpstan/phpstan-phpunit": "^2",
         "friendsofphp/php-cs-fixer": "^3"
     },
     "authors": [
@@ -28,6 +34,13 @@
             "name": "James Ellis",
             "role": "Developer"
         }
-    ]
-
+    ],
+    "config": {
+        "allow-plugins": {
+            "composer/installers": true,
+            "silverstripe/vendor-plugin": true,
+            "silverstripe/recipe-plugin": true,
+            "phpstan/extension-installer": true
+        }
+    }
 }

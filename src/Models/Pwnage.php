@@ -14,117 +14,108 @@ use SilverStripe\Security\Permission;
  */
 class Pwnage
 {
-
     use Configurable;
     use Injectable;
 
     /**
      * Your HIBP API key
-     * @var string
      */
-    private static $hibp_api_key = '';
+    private static string $hibp_api_key = '';
 
     /**
      * By default, check against configured pwned password corpus
-     * @var boolean
      */
-    private static $check_pwned_passwords = true;
+    private static bool $check_pwned_passwords = true;
 
     /**
      * Whether to allow pwned passwords
      * If false this adds a validation warning and records the fact against the member
-     * @var boolean
      */
-    private static $allow_pwned_passwords = false;
+    private static bool $allow_pwned_passwords = false;
 
     /**
      * Adds padding (Add-Padding in the API) to pwned password lookups
      * Read https://haveibeenpwned.com/API/v3#PwnedPasswordsPadding prior to changing to false
-     * @var boolean
      */
-    private static $hibp_include_padding = true;
+    private static bool $hibp_include_padding = true;
 
     /**
      * HIBP breach option - when true, returns only the name of the breach.
-     * @var boolean
      */
-    private static $hibp_truncate_response = true;
+    private static bool $hibp_truncate_response = true;
 
     /**
      * HIBP breach option - filter result set to just this domain
-     * @var string
      */
-    private static $hibp_domain_filter = '';
+    private static string $hibp_domain_filter = '';
 
     /**
      * HIBP breach option - include unverified breaches
-     * @var boolean
      */
-    private static $hibp_include_unverified = false;
+    private static bool $hibp_include_unverified = false;
 
     /**
      * Permission code to use for digest notification
-     * @var string
      */
-    private static $digest_permission_code = 'ADMIN';
+    private static string $digest_permission_code = 'ADMIN';
 
     /**
      * Notify relevant group(s) with the configured permission code via a digest
-     * @var boolean
      */
-    private static $notify_pwned_password_digest = true;
+    private static bool $notify_pwned_password_digest = true;
 
     /**
      * Return the Pwned API client
      */
-    protected function getClient($api_key = null) : Pwned {
+    protected function getClient($api_key = null): Pwned
+    {
         return new Pwned($api_key);
     }
 
     /**
      * Get groups that can be notified of pwned passwords
      */
-    public function getDigestNotificationGroups() {
+    public function getDigestNotificationGroups()
+    {
         $code = self::config()->get('digest_permission_code');
-        if(!$code) {
+        if (!$code) {
             return false;
         }
-        $groups = Permission::get_groups_by_permission($code);
-        return $groups;
+
+        return Permission::get_groups_by_permission($code);
     }
 
     /**
      * Check plain password using {@link MFlor\Pwned\Pwned} service client
-     * @param string $password_plaintext
      * @returns int the number of breach occurrences
      */
-    public function checkPassword($password_plaintext)
+    public function checkPassword(string $password_plaintext): int
     {
         try {
             $error = "";
             $pwned = $this->getClient();
             // note: {@link MFlor\Pwned\Repositories\PasswordRepository} hashes the password as required
             $occurences = $pwned->passwords()->occurrences(
-                            $password_plaintext,
-                            self::config()->get('hibp_include_padding')
+                $password_plaintext,
+                self::config()->get('hibp_include_padding')
             );
             return $occurences;
-        } catch (\Exception $e) {
+        } catch (\Exception $exception) {
             // TODO log?
-            $error = $e->getMessage() ?: 'unknown error';
+            $error = $exception->getMessage();
         }
+
         throw new ApiException($error);
     }
 
     /**
      * Check email address using {@link MFlor\Pwned\Pwned} service client
-     * @param string $email_address
      * @returns array
      */
-    public function checkBreachedAccount(string $email_address) : array
+    public function checkBreachedAccount(string $email_address): array
     {
         if (!Email::is_valid_address($email_address)) {
-            throw new ValidationException(
+            throw ValidationException::create(
                 _t(
                     Pwnage::class . ".EMAIL_NOT_VALID",
                     "Email address provided is not valid"
@@ -155,21 +146,16 @@ class Pwnage
 
     /**
      * Get count of breaches for an account
-     * @returns int
-     * @param string $email_address
      */
-    public function getBreachedAccountCount($email_address)
+    public function getBreachedAccountCount(string $email_address): int
     {
         try {
             $result = $this->checkBreachedAccount($email_address);
-            if (is_array($result)) {
-                return count($result);
-            } else {
-                return 0;
-            }
-        } catch (\Exception $e) {
-            $error = $e->getMessage() ?: "unknown";
+            return count($result);
+        } catch (\Exception $exception) {
+            $error = $exception->getMessage();
         }
+
         throw new ApiException($error);
     }
 }

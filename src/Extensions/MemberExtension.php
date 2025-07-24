@@ -2,9 +2,9 @@
 
 namespace NSWDPC\Pwnage;
 
-use Silverstripe\ORM\DataExtension;
-use SilverStripe\Core\Config\Config;
+use SilverStripe\ORM\DataExtension;
 use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Forms\ConfirmedPasswordField;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\ReadonlyField;
 use SilverStripe\Forms\FormField;
@@ -12,30 +12,23 @@ use SilverStripe\Security\PasswordValidator;
 
 /**
  * Decorates SilverStripe\Security\Member with fields related to compromised passwords and breaches
+ * @property bool $IsPwnedPassword
+ * @property bool $PwnedPasswordNotify
+ * @extends \SilverStripe\ORM\DataExtension<(\SilverStripe\Security\Member & static)>
  */
 class MemberExtension extends DataExtension
 {
-
-    /**
-     * @var array
-     */
-    private static $db = [
+    private static array $db = [
         'IsPwnedPassword' => 'Boolean',
         'PwnedPasswordNotify' => 'Boolean'// optional flag to notify admin of pwned password
     ];
 
-    /**
-     * @var array
-     */
-    private static $defaults = [
+    private static array $defaults = [
         'IsPwnedPassword' => '0',
         'PwnedPasswordNotify' => '0'
     ];
 
-    /**
-     * @var array
-     */
-    private static $indexes = [
+    private static array $indexes = [
         'IsPwnedPassword' => true,
         'PwnedPasswordNotify' => true
     ];
@@ -43,6 +36,7 @@ class MemberExtension extends DataExtension
     /**
      * Show summary fields
      */
+    #[\Override]
     public function updateSummaryFields(&$fields)
     {
         $fields['IsPwnedPassword'] = _t(
@@ -64,16 +58,14 @@ class MemberExtension extends DataExtension
         ));
     }
 
-    /**
-     * @param FieldList $fields
-     */
     public function updateCMSFields(FieldList $fields)
     {
         $fields->removeByName([
             'PwnedPasswordNotify'
         ]);
 
-        if ($confirmed_password_field = $fields->dataFieldByName('Password')) {
+        $confirmed_password_field = $fields->dataFieldByName('Password');
+        if ($confirmed_password_field instanceof ConfirmedPasswordField) {
             $password_field = $confirmed_password_field->getPasswordField();
             if ($password_field) {
                 $this->setPasswordValidationInformation($password_field);
