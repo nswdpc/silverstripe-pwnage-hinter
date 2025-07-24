@@ -47,7 +47,7 @@ class MemberExtension extends \SilverStripe\Core\Extension
     public function setPasswordValidationInformation(FormField $field)
     {
         $validator = Injector::inst()->get(PasswordValidator::class);
-        if($validator && ($validator instanceof RulesPasswordValidator || method_exists($validator, 'getMinLength'))) {
+        if ($validator && ($validator instanceof RulesPasswordValidator || method_exists($validator, 'getMinLength'))) {
             $min_length = $validator->getMinLength();
             $field->setDescription(_t(
                 Pwnage::class . '.PASSWORD_MIN_LENGTH',
