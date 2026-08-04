@@ -16,7 +16,7 @@
     "require": {
         "mflor/pwned" : "^5",
         "symbiote/silverstripe-queuedjobs" : "^6",
-        "symbiote/silverstripe-multivaluefield" : "dev-7 || ^7",
+        "symbiote/silverstripe-multivaluefield" : "^7",
         "silverstripe/framework" : "^6"
     },
     "require-dev": {
