@@ -10,7 +10,8 @@ use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Control\Email\Email;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\Security\Member;
-use SilverStripe\Security\PasswordValidator;
+use SilverStripe\Security\Validation\PasswordValidator;
+use SilverStripe\Security\Validation\RulesPasswordValidator;
 
 class PwnageTest extends SapphireTest
 {
@@ -30,10 +31,25 @@ class PwnageTest extends SapphireTest
 
         parent::setUp();
 
-        // Register validator
+        // Use RulesPasswordValidator for these tests
+        Injector::inst()->registerService(
+            RulesPasswordValidator::create(),
+            PasswordValidator::class
+        );
+
         $validator = Injector::inst()->get(PasswordValidator::class);
+        $this->assertInstanceOf(RulesPasswordValidator::class, $validator);
+
+        Config::modify()->set($validator::class, 'character_strength_tests', []);
         Config::modify()->set($validator::class, 'min_length', 8);
+        Config::modify()->set($validator::class, 'historic_count', 0);
+        Config::modify()->set($validator::class, 'min_test_score', 0);
+
         $validator->setMinLength(8);
+        $validator->setHistoricCount(0);
+        $validator->setTestNames([]);
+        $validator->setMinTestScore(0);
+
         Member::set_password_validator($validator);
     }
 
@@ -134,6 +150,7 @@ class PwnageTest extends SapphireTest
 
         $result = $member->changePassword('password');
 
+        $this->assertArrayHasKey('PWNED_PASSWORD', $result->getMessages());
         $this->assertFalse($result->isValid(), "Password change should be invalid");
         $this->assertEquals(0, $member->IsPwnedPassword);
         $this->assertEquals(0, $member->PwnedPasswordNotify);
@@ -161,8 +178,8 @@ class PwnageTest extends SapphireTest
 
         $member->Password = 'password';
         $result = $member->validate();
-
-        $this->assertTrue($result->isValid(), "Password change should be allowed");
+        $this->assertArrayHasKey('PWNED_PASSWORD_WARNING', $result->getMessages());
+        $this->assertTrue($result->isValid(), "Password change should be allowed.");
         $this->assertEquals(1, $member->IsPwnedPassword);
         $this->assertEquals(1, $member->PwnedPasswordNotify);
 
@@ -189,13 +206,14 @@ class PwnageTest extends SapphireTest
 
         $member->Password = 'password';
         $result = $member->validate();
-
+        $this->assertArrayHasKey('PWNED_PASSWORD_WARNING', $result->getMessages());
         $this->assertTrue($result->isValid(), "Password change should be allowed");
         $this->assertEquals(1, $member->IsPwnedPassword, "IsPwnedPassword value");
         $this->assertEquals(1, $member->PwnedPasswordNotify, "PwnedPasswordNotify value");
 
         $member->Password = 'a-better-password';
         $result = $member->validate();
+        $this->assertEmpty($result->getMessages());
         $this->assertTrue($result->isValid(), "Password change is OK");
         $this->assertEquals(0, $member->IsPwnedPassword);
         $this->assertEquals(0, $member->PwnedPasswordNotify);
@@ -221,7 +239,7 @@ class PwnageTest extends SapphireTest
         $password = bin2hex(random_bytes(32));
         $result = $member->changePassword($password);
 
-        $this->assertTrue($result->isValid(), "Password should be valid");
+        $this->assertTrue($result->isValid(), "Random password '{$password}' should be valid");
 
         $this->assertEquals(0, $member->IsPwnedPassword, "IsPwnedPassword should be 0");
         $this->assertEquals(0, $member->PwnedPasswordNotify, "PwnedPasswordNotify should be 0");

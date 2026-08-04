@@ -26,8 +26,8 @@ class PwnageNotifier
         string $subject,
         string $template,
         array $data = [],
-        Member $member = null,
-        Group $group = null
+        ?Member $member = null,
+        ?Group $group = null
     ): bool {
 
         $to = $this->getRecipients($member, $group);
@@ -74,7 +74,7 @@ class PwnageNotifier
     /**
      * @return mixed[]
      */
-    public function getRecipients(Member $member = null, Group $group = null): array
+    public function getRecipients(?Member $member = null, ?Group $group = null): array
     {
         $to = [];
 

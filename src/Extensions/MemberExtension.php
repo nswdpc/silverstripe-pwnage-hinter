@@ -2,21 +2,21 @@
 
 namespace NSWDPC\Pwnage;
 
-use SilverStripe\ORM\DataExtension;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Forms\ConfirmedPasswordField;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\ReadonlyField;
 use SilverStripe\Forms\FormField;
-use SilverStripe\Security\PasswordValidator;
+use SilverStripe\Security\Validation\PasswordValidator;
+use SilverStripe\Security\Validation\RulesPasswordValidator;
 
 /**
  * Decorates SilverStripe\Security\Member with fields related to compromised passwords and breaches
  * @property bool $IsPwnedPassword
  * @property bool $PwnedPasswordNotify
- * @extends \SilverStripe\ORM\DataExtension<(\SilverStripe\Security\Member & static)>
+ * @extends \SilverStripe\Core\Extension<\SilverStripe\Security\Member&static>
  */
-class MemberExtension extends DataExtension
+class MemberExtension extends \SilverStripe\Core\Extension
 {
     private static array $db = [
         'IsPwnedPassword' => 'Boolean',
@@ -36,8 +36,7 @@ class MemberExtension extends DataExtension
     /**
      * Show summary fields
      */
-    #[\Override]
-    public function updateSummaryFields(&$fields)
+    public function updateSummaryFields(array &$fields)
     {
         $fields['IsPwnedPassword'] = _t(
             Pwnage::class . '.PWNED_PASSWORD_DESC_SHORT',
@@ -48,14 +47,16 @@ class MemberExtension extends DataExtension
     public function setPasswordValidationInformation(FormField $field)
     {
         $validator = Injector::inst()->get(PasswordValidator::class);
-        $min_length = $validator->getMinLength();
-        $field->setDescription(_t(
-            Pwnage::class . '.PASSWORD_MIN_LENGTH',
-            'Minimum length: {min_length} characters',
-            [
-                'min_length' => $min_length
-            ]
-        ));
+        if ($validator && ($validator instanceof RulesPasswordValidator || method_exists($validator, 'getMinLength'))) {
+            $min_length = $validator->getMinLength();
+            $field->setDescription(_t(
+                Pwnage::class . '.PASSWORD_MIN_LENGTH',
+                'Minimum length: {min_length} characters',
+                [
+                    'min_length' => $min_length
+                ]
+            ));
+        }
     }
 
     public function updateCMSFields(FieldList $fields)
@@ -67,9 +68,7 @@ class MemberExtension extends DataExtension
         $confirmed_password_field = $fields->dataFieldByName('Password');
         if ($confirmed_password_field instanceof ConfirmedPasswordField) {
             $password_field = $confirmed_password_field->getPasswordField();
-            if ($password_field) {
-                $this->setPasswordValidationInformation($password_field);
-            }
+            $this->setPasswordValidationInformation($password_field);
         }
 
         $fields->insertAfter(

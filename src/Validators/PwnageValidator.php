@@ -2,30 +2,25 @@
 
 namespace NSWDPC\Pwnage;
 
-use SilverStripe\Security\PasswordValidator;
+use SilverStripe\Security\Validation\PasswordValidator;
 use SilverStripe\Core\Injector\Injector;
-use SilverStripe\ORM\ValidationResult;
 use SilverStripe\Security\Member;
 use SilverStripe\Core\Extension;
 
 /**
- * Extends {@link SilverStripe\Security\PasswordValidator} to provide pwnage smarts
- * @extends \SilverStripe\Core\Extension<(\SilverStripe\Security\PasswordValidator & static)>
+ * Extends {@link \SilverStripe\Security\Validation\PasswordValidator} to provide pwnage smarts
+ * @extends \SilverStripe\Core\Extension<never>
  */
 class PwnageValidator extends Extension
 {
     /**
-     * Validate the password against the Pwmnage providers configured and set values on the Member record
+     * Validate the password against the Pwnage providers configured and set values on the Member record
      * @param Member $member
      * @return void
      * @todo log an error on service/api/network failure ?
      */
-    public function updateValidatePassword(string $password, $member, ValidationResult $validation_result, PasswordValidator $validator)
+    public function updateValidatePassword(string $password, $member, \SilverStripe\Core\Validation\ValidationResult $validationResult, PasswordValidator $validator)
     {
-        if (!$validation_result->isValid()) {
-            // no need to continue with validation here as the password is already invalid for some reason
-            return;
-        }
 
         if (Pwnage::config()->get('check_pwned_passwords')) {
             try {
@@ -44,7 +39,7 @@ class PwnageValidator extends Extension
                         );
 
                         // fail the validation process
-                        $validation_result->addError($error, ValidationResult::TYPE_ERROR, 'PWNED_PASSWORD');
+                        $validationResult->addError($error, \SilverStripe\Core\Validation\ValidationResult::TYPE_ERROR, 'PWNED_PASSWORD');
                     } else {
 
                         // password is allowed, with warning, also flag the account
@@ -56,7 +51,7 @@ class PwnageValidator extends Extension
                             Pwnage::class . ".PASSWORD_PWNED_WARNING",
                             'The password provided has appeared in at least one data breach. Please change your password immediately.'
                         );
-                        $validation_result->addMessage($error, ValidationResult::TYPE_WARNING, 'PWNED_PASSWORD');
+                        $validationResult->addMessage($error, \SilverStripe\Core\Validation\ValidationResult::TYPE_WARNING, 'PWNED_PASSWORD_WARNING');
                     }
                 } else {
                     // reset to zero

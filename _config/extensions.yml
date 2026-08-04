@@ -7,7 +7,7 @@ SilverStripe\Security\Member:
 SilverStripe\Admin\SecurityAdmin:
   extensions:
     - NSWDPC\Pwnage\SecurityAdminExtension
-SilverStripe\Security\PasswordValidator:
+SilverStripe\Security\Validation\PasswordValidator:
   # add the pwnage validator
   extensions:
     - NSWDPC\Pwnage\PwnageValidator
