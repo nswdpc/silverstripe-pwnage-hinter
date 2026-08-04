@@ -29,6 +29,6 @@ Default: 'Account notifier'
 
 ## Templates
 
-Email templates can be overridden in your theme, just copy the module's include and template files to the same path location in your theme/<theme_name>/templates or app/templates directory and edit as required. See https://docs.silverstripe.org/en/5/developer_guides/templates/template_inheritance/ for more information.
+Email templates can be overridden in your theme, just copy the module's include and template files to the same path location in your theme/<theme_name>/templates or app/templates directory and edit as required. See https://docs.silverstripe.org/en/6/developer_guides/templates/template_inheritance/ for more information.
 
 The templates shipped with this module are provided as a guide.
