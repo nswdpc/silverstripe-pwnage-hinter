@@ -20,7 +20,7 @@ In addition to password checking it can be used to check for breaches, or a coun
 
 The module comes with a default configuration that should get you up and running.
 
-Read [the configuration documentation](./docs/en/index.md) for configuration instructions
+Read [the configuration documentation](./docs/en/001_index.md) for configuration instructions
 
 Read [the email documentation](./docs/en/002_email.md) for information about email and templates
 
