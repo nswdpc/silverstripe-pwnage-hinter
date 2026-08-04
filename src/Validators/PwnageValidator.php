@@ -22,11 +22,6 @@ class PwnageValidator extends Extension
     public function updateValidatePassword(string $password, $member, \SilverStripe\Core\Validation\ValidationResult $validationResult, PasswordValidator $validator)
     {
 
-        if (!$validationResult->isValid()) {
-            // no need to continue with validation here as the password is already invalid for some reason
-            return;
-        }
-
         if (Pwnage::config()->get('check_pwned_passwords')) {
             try {
                 $pwnage = Injector::inst()->create(Pwnage::class);
